@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     initTrafficStats();
-    initDaysStats();
+    initDaysStats(); renderConfigs();
 });
 
 function initTrafficStats() {
@@ -102,4 +102,55 @@ function timeAgo(date) {
     interval = Math.floor(seconds / 60);
     if (interval >= 1) return interval + " minutes ago";
     return Math.floor(seconds) + " seconds ago";
+}
+
+
+function renderConfigs() {
+    const container = document.getElementById('configs-container');
+    const rawLinksContainer = document.getElementById('raw-links-container');
+    if (!container || !rawLinksContainer) return;
+
+    const rawLinks = Array.from(rawLinksContainer.querySelectorAll('.raw-link')).map(el => el.innerText.trim()).filter(l => l.length > 0);
+    
+    if (rawLinks.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-sub, #999);">No configs available</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    rawLinks.forEach(link => {
+        let name = "Unknown Config";
+        let protocol = "vpn";
+        try {
+            // Extract hash
+            const hashIndex = link.indexOf('#');
+            if (hashIndex !== -1) {
+                name = decodeURIComponent(link.substring(hashIndex + 1));
+            }
+            // Extract protocol
+            const protoIndex = link.indexOf('://');
+            if (protoIndex !== -1) {
+                protocol = link.substring(0, protoIndex).toLowerCase();
+            }
+        } catch (e) {}
+        
+        // Basic card template that fits most themes
+        const card = document.createElement('div');
+        card.style.cssText = 'background: var(--bg-card, rgba(255,255,255,0.05)); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--card-border, rgba(0,0,0,0.05)); margin-bottom: 12px;';
+        
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap: 12px; overflow: hidden; flex: 1;">
+                <div style="width: 40px; height: 40px; border-radius: 12px; background: var(--primary, #3b82f6); color: white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size: 0.75rem; text-transform: uppercase;">${protocol.substring(0,4)}</div>
+                <div style="flex:1; overflow:hidden;">
+                    <h4 style="margin:0; font-size:1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: var(--text-main, inherit);">${name}</h4>
+                    <p style="margin:2px 0 0; font-size:0.75rem; color: var(--text-sub, #999);">${protocol}</p>
+                </div>
+            </div>
+            <div style="display:flex; gap: 8px; margin-left: 12px;">
+                <button onclick="copyToClipboard('${link}', 'Config Copied!')" style="background:var(--bg-main, transparent); border:1px solid var(--card-border, rgba(0,0,0,0.1)); color:var(--text-main, inherit); padding:8px; border-radius:8px; cursor:pointer;">Copy</button>
+                <button onclick="showQR('${link}', '${name}')" style="background:var(--text-main, #000); color:var(--bg-main, #fff); border:none; padding:8px; border-radius:8px; cursor:pointer;">QR</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
 }

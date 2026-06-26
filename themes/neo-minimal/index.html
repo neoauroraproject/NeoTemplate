@@ -76,19 +76,15 @@
         <!-- Configurations List -->
         <h3 class="section-title">Configurations</h3>
         <div class="config-list">
-            {{ range .proxies }}
-            <div class="config-card">
-                <div class="config-name">{{ .Name }}</div>
-                <div class="config-actions">
-                    <button class="icon-btn" onclick="copyToClipboard('{{ .Link }}', 'Config Copied!')" aria-label="Copy">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    </button>
-                    <button class="icon-btn" onclick="showQR('{{ .Link }}', '{{ .Name }}')" aria-label="QR Code">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h6v6H3z"></path><path d="M15 3h6v6h-6z"></path><path d="M3 15h6v6H3z"></path><path d="M21 21v-6h-6"></path><path d="M15 21h-6v-6"></path><path d="M15 15v-6h6"></path></svg>
-                    </button>
-                </div>
+            
+            <!-- Hidden raw links for JS to parse -->
+            <div id="raw-links-container" style="display:none;">
+                {{ range .links }}
+                <div class="raw-link">{{ . }}</div>
+                {{ end }}
             </div>
-            {{ end }}
+            <div id="configs-container" class="config-list-container" style="display:flex; flex-direction:column; gap:16px;"></div>
+    
         </div>
         
         <button class="action-btn" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>

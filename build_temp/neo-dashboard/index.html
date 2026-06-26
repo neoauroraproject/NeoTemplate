@@ -251,7 +251,7 @@ body {
             <div class="user-profile">
                 <div class="avatar" id="user-avatar">N</div>
                 <div>
-                    <h1 class="user-name">{{ .emails }}</h1>
+                    <h1 class="user-name">{{ range $i, $e := .emails }}{{ if $i }}, {{ end }}{{ $e }}{{ end }}</h1>
                     <p class="user-status">
                         <span class="status-dot {{ if .enabled }}active{{ end }}"></span>
                         {{ if .enabled }}Active Connection{{ else }}Disconnected{{ end }}
@@ -339,24 +339,15 @@ body {
             <div class="configs-section">
                 <h3 class="section-title">Your Configurations</h3>
                 <div class="configs-list">
-                    {{ range .proxies }}
-                    <div class="config-item">
-                        <div class="config-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                        </div>
-                        <div class="config-info">
-                            <div class="config-name">{{ .Name }}</div>
-                        </div>
-                        <div class="config-actions">
-                            <button class="config-btn" onclick="copyToClipboard('{{ .Link }}', 'Config Copied!')">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            </button>
-                            <button class="config-btn primary" onclick="showQR('{{ .Link }}', '{{ .Name }}')">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h6v6H3z"></path><path d="M15 3h6v6h-6z"></path><path d="M3 15h6v6H3z"></path><path d="M21 21v-6h-6"></path><path d="M15 21h-6v-6"></path><path d="M15 15v-6h6"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                    {{ end }}
+                    
+            <!-- Hidden raw links for JS to parse -->
+            <div id="raw-links-container" style="display:none;">
+                {{ range .links }}
+                <div class="raw-link">{{ . }}</div>
+                {{ end }}
+            </div>
+            <div id="configs-container" class="config-list-container" style="display:flex; flex-direction:column; gap:16px;"></div>
+    
                 </div>
             </div>
 
@@ -420,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initThemeToggle();
     initAvatar();
     initTrafficStats();
-    initDaysStats();
+    initDaysStats(); renderConfigs();
 });
 
 function initThemeToggle() {
@@ -583,6 +574,57 @@ function timeAgo(date) {
     interval = Math.floor(seconds / 60);
     if (interval >= 1) return interval + " minutes ago";
     return Math.floor(seconds) + " seconds ago";
+}
+
+
+function renderConfigs() {
+    const container = document.getElementById('configs-container');
+    const rawLinksContainer = document.getElementById('raw-links-container');
+    if (!container || !rawLinksContainer) return;
+
+    const rawLinks = Array.from(rawLinksContainer.querySelectorAll('.raw-link')).map(el => el.innerText.trim()).filter(l => l.length > 0);
+    
+    if (rawLinks.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-sub, #999);">No configs available</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    rawLinks.forEach(link => {
+        let name = "Unknown Config";
+        let protocol = "vpn";
+        try {
+            // Extract hash
+            const hashIndex = link.indexOf('#');
+            if (hashIndex !== -1) {
+                name = decodeURIComponent(link.substring(hashIndex + 1));
+            }
+            // Extract protocol
+            const protoIndex = link.indexOf('://');
+            if (protoIndex !== -1) {
+                protocol = link.substring(0, protoIndex).toLowerCase();
+            }
+        } catch (e) {}
+        
+        // Basic card template that fits most themes
+        const card = document.createElement('div');
+        card.style.cssText = 'background: var(--bg-card, rgba(255,255,255,0.05)); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--card-border, rgba(0,0,0,0.05)); margin-bottom: 12px;';
+        
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap: 12px; overflow: hidden; flex: 1;">
+                <div style="width: 40px; height: 40px; border-radius: 12px; background: var(--primary, #3b82f6); color: white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size: 0.75rem; text-transform: uppercase;">${protocol.substring(0,4)}</div>
+                <div style="flex:1; overflow:hidden;">
+                    <h4 style="margin:0; font-size:1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: var(--text-main, inherit);">${name}</h4>
+                    <p style="margin:2px 0 0; font-size:0.75rem; color: var(--text-sub, #999);">${protocol}</p>
+                </div>
+            </div>
+            <div style="display:flex; gap: 8px; margin-left: 12px;">
+                <button onclick="copyToClipboard('${link}', 'Config Copied!')" style="background:var(--bg-main, transparent); border:1px solid var(--card-border, rgba(0,0,0,0.1)); color:var(--text-main, inherit); padding:8px; border-radius:8px; cursor:pointer;">Copy</button>
+                <button onclick="showQR('${link}', '${name}')" style="background:var(--text-main, #000); color:var(--bg-main, #fff); border:none; padding:8px; border-radius:8px; cursor:pointer;">QR</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
 }
 
 </script>

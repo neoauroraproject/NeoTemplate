@@ -68,6 +68,7 @@ body {
     padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
+    margin: 0 auto;
     z-index: 1;
 }
 

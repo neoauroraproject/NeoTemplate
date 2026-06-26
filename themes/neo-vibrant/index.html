@@ -24,7 +24,7 @@
             <div class="user-profile">
                 <!-- Fallback to 'A' if email is empty (JS will replace this with first letter of subTitle) -->
                 <div class="avatar" id="user-avatar">U</div>
-                <h2 style="margin:0; font-size: 1rem;" id="display-name">{{ .emails }}</h2>
+                <h2 style="margin:0; font-size: 1rem;" id="display-name">{{ range $i, $e := .emails }}{{ if $i }}, {{ end }}{{ $e }}{{ end }}</h2>
             </div>
             <button id="theme-toggle" class="btn-icon" aria-label="Toggle Theme">
                 <!-- Sun/Moon Icon -->
@@ -86,19 +86,15 @@
             <!-- Configurations List -->
             <h3 class="section-title" style="font-size: 1rem; color: var(--text-sub); margin-top: 24px;">Configurations</h3>
             <div class="config-list" style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
-                {{ range .proxies }}
-                <div class="config-card glass-card" style="padding:16px; display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size:0.875rem; font-weight:500; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-right:16px;">{{ .Name }}</div>
-                    <div style="display:flex; gap:8px;">
-                        <button style="background:var(--card-bg); border:1px solid var(--border-color); color:var(--text-main); padding:12px; border-radius:12px; cursor:pointer;" onclick="copyToClipboard('{{ .Link }}', 'Config Copied!')">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                        <button style="background:var(--card-bg); border:1px solid var(--border-color); color:var(--text-main); padding:12px; border-radius:12px; cursor:pointer;" onclick="showQR('{{ .Link }}', '{{ .Name }}')">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h6v6H3z"></path><path d="M15 3h6v6h-6z"></path><path d="M3 15h6v6H3z"></path><path d="M21 21v-6h-6"></path><path d="M15 21h-6v-6"></path><path d="M15 15v-6h6"></path></svg>
-                        </button>
-                    </div>
-                </div>
+                
+            <!-- Hidden raw links for JS to parse -->
+            <div id="raw-links-container" style="display:none;">
+                {{ range .links }}
+                <div class="raw-link">{{ . }}</div>
                 {{ end }}
+            </div>
+            <div id="configs-container" class="config-list-container" style="display:flex; flex-direction:column; gap:16px;"></div>
+    
             </div>
 
         </section>
@@ -177,9 +173,9 @@
                 <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Quick Actions</h3>
                 <button style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('action-modal').style.display='none'">✕</button>
             </div>
-            <button class="btn-copy" style="margin-bottom: 12px; display:flex; justify-content:center;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
-            <a href="v2rayng://install-sub?url={{ .subUrl }}&name={{ .subTitle }}" class="btn-copy" style="margin-bottom: 12px; background:var(--card-bg); color:var(--text-main); text-decoration:none; display:flex; justify-content:center;">Import to V2RayNG / v2rayN</a>
-            <a href="v2ray://install-sub?url={{ .subUrl }}&name={{ .subTitle }}" class="btn-copy" style="background:var(--card-bg); color:var(--text-main); text-decoration:none; display:flex; justify-content:center;">Import to Shadowrocket / iOS</a>
+            <button class="copy-btn" style="padding: 12px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); text-decoration: none; display: flex; justify-content: center; width: 100%; border: 1px solid var(--card-border);" style="margin-bottom: 12px; display:flex; justify-content:center;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
+            <a href="v2rayng://install-sub?url={{ .subUrl }}&name={{ .subTitle }}" class="copy-btn" style="padding: 12px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); text-decoration: none; display: flex; justify-content: center; width: 100%; border: 1px solid var(--card-border);" style="margin-bottom: 12px; background:var(--card-bg); color:var(--text-main); text-decoration:none; display:flex; justify-content:center;">Import to V2RayNG / v2rayN</a>
+            <a href="v2ray://install-sub?url={{ .subUrl }}&name={{ .subTitle }}" class="copy-btn" style="padding: 12px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); text-decoration: none; display: flex; justify-content: center; width: 100%; border: 1px solid var(--card-border);" style="background:var(--card-bg); color:var(--text-main); text-decoration:none; display:flex; justify-content:center;">Import to Shadowrocket / iOS</a>
             <a class="modal-btn" style="text-decoration:none; background: var(--success); color: white; margin-top: 12px;" href="{{ .subSupportUrl }}" target="_blank">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 Contact Support
@@ -192,7 +188,7 @@
         <div class="glass-card" style="padding:24px; text-align:center; width:100%; max-width:400px; display:flex; flex-direction:column; align-items:center;">
             <h3 id="qr-title" style="margin-bottom:16px; font-size:1rem; word-break:break-all;"></h3>
             <div style="background:white; padding:16px; border-radius:16px;"><canvas id="qr-canvas"></canvas></div>
-            <button class="btn-copy" style="margin-top:24px;" onclick="document.getElementById('qr-modal').style.display='none'">Close</button>
+            <button class="copy-btn" style="padding: 12px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); text-decoration: none; display: flex; justify-content: center; width: 100%; border: 1px solid var(--card-border);" style="margin-top:24px;" onclick="document.getElementById('qr-modal').style.display='none'">Close</button>
         </div>
     </div>
 

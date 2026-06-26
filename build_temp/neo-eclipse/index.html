@@ -79,6 +79,7 @@ body {
     padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
+    margin: 0 auto;
     z-index: 1;
 }
 
@@ -485,7 +486,7 @@ body.theme-dark .bottom-actions {
         <header class="header-pill">
             <div class="brand-title" style="position:absolute; top:-30px; left:0; font-size:1.5rem; font-weight:700;">{{ .subTitle }}</div>
             <div class="avatar" id="user-avatar">N</div>
-            <div class="greeting">Hi, <span id="display-name">{{ .emails }}</span></div>
+            <div class="greeting">Hi, <span id="display-name">{{ range $i, $e := .emails }}{{ if $i }}, {{ end }}{{ $e }}{{ end }}</span></div>
             <button class="icon-btn" id="theme-toggle" aria-label="Toggle Theme" style="margin-left:auto;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="5"></circle>
@@ -550,22 +551,15 @@ body.theme-dark .bottom-actions {
             
             <h2 class="section-title">Configs</h2>
             <div class="transaction-list">
-                {{ range .proxies }}
-                <div class="tx-item">
-                    <div class="tx-left">
-                        <div class="tx-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                        </div>
-                        <div class="tx-info">
-                            <h3 style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 150px;">{{ .Name }}</h3>
-                        </div>
-                    </div>
-                    <div class="tx-right" style="display:flex; gap:8px;">
-                        <button style="background:var(--bg-card); border:1px solid rgba(0,0,0,0.1); padding:8px 12px; border-radius:12px; cursor:pointer;" onclick="copyToClipboard('{{ .Link }}', 'Config Copied!')">Copy</button>
-                        <button style="background:var(--text-main); color:var(--bg-main); border:none; padding:8px 12px; border-radius:12px; cursor:pointer;" onclick="showQR('{{ .Link }}', '{{ .Name }}')">QR</button>
-                    </div>
-                </div>
+                
+            <!-- Hidden raw links for JS to parse -->
+            <div id="raw-links-container" style="display:none;">
+                {{ range .links }}
+                <div class="raw-link">{{ . }}</div>
                 {{ end }}
+            </div>
+            <div id="configs-container" class="config-list-container" style="display:flex; flex-direction:column; gap:16px;"></div>
+    
             </div>
 
             <!-- Import Actions -->
@@ -641,7 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initThemeToggle();
     initAvatar();
     initTrafficStats();
-    initDaysStats();
+    initDaysStats(); renderConfigs();
 });
 
 /**
@@ -829,6 +823,57 @@ function timeAgo(date) {
     interval = Math.floor(seconds / 60);
     if (interval >= 1) return interval + " minutes ago";
     return Math.floor(seconds) + " seconds ago";
+}
+
+
+function renderConfigs() {
+    const container = document.getElementById('configs-container');
+    const rawLinksContainer = document.getElementById('raw-links-container');
+    if (!container || !rawLinksContainer) return;
+
+    const rawLinks = Array.from(rawLinksContainer.querySelectorAll('.raw-link')).map(el => el.innerText.trim()).filter(l => l.length > 0);
+    
+    if (rawLinks.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-sub, #999);">No configs available</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    rawLinks.forEach(link => {
+        let name = "Unknown Config";
+        let protocol = "vpn";
+        try {
+            // Extract hash
+            const hashIndex = link.indexOf('#');
+            if (hashIndex !== -1) {
+                name = decodeURIComponent(link.substring(hashIndex + 1));
+            }
+            // Extract protocol
+            const protoIndex = link.indexOf('://');
+            if (protoIndex !== -1) {
+                protocol = link.substring(0, protoIndex).toLowerCase();
+            }
+        } catch (e) {}
+        
+        // Basic card template that fits most themes
+        const card = document.createElement('div');
+        card.style.cssText = 'background: var(--bg-card, rgba(255,255,255,0.05)); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--card-border, rgba(0,0,0,0.05)); margin-bottom: 12px;';
+        
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap: 12px; overflow: hidden; flex: 1;">
+                <div style="width: 40px; height: 40px; border-radius: 12px; background: var(--primary, #3b82f6); color: white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size: 0.75rem; text-transform: uppercase;">${protocol.substring(0,4)}</div>
+                <div style="flex:1; overflow:hidden;">
+                    <h4 style="margin:0; font-size:1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: var(--text-main, inherit);">${name}</h4>
+                    <p style="margin:2px 0 0; font-size:0.75rem; color: var(--text-sub, #999);">${protocol}</p>
+                </div>
+            </div>
+            <div style="display:flex; gap: 8px; margin-left: 12px;">
+                <button onclick="copyToClipboard('${link}', 'Config Copied!')" style="background:var(--bg-main, transparent); border:1px solid var(--card-border, rgba(0,0,0,0.1)); color:var(--text-main, inherit); padding:8px; border-radius:8px; cursor:pointer;">Copy</button>
+                <button onclick="showQR('${link}', '${name}')" style="background:var(--text-main, #000); color:var(--bg-main, #fff); border:none; padding:8px; border-radius:8px; cursor:pointer;">QR</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
 }
 
 </script>
