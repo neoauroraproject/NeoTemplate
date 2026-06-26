@@ -320,7 +320,16 @@ document.addEventListener('click', function(e) {
         "Total Used": "کل مصرف",
         "Days Left": "روزهای باقی‌مانده",
         "Days Remaining": "روزهای باقی‌مانده",
+        "days remaining": "روز باقی‌مانده",
+        "days left": "روز باقی‌مانده",
         "Days": "روز",
+        "days": "روز",
+        "days ago": "روز پیش",
+        "hours ago": "ساعت پیش",
+        "minutes ago": "دقیقه پیش",
+        "seconds ago": "ثانیه پیش",
+        "months ago": "ماه پیش",
+        "years ago": "سال پیش",
         "Advanced Information": "اطلاعات پیشرفته",
         "Advanced Info": "اطلاعات پیشرفته",
         "Status": "وضعیت",
@@ -364,7 +373,6 @@ document.addEventListener('click', function(e) {
         "Copy Link": "کپی لینک",
         "Dark Mode": "حالت تاریک",
         "Light Mode": "حالت روشن",
-        "Days Remaining": "روزهای باقی‌مانده",
         "Never Expires": "بدون انقضا",
         "Contact Support →": "ارتباط با پشتیبانی ←",
         "Contact Support &rarr;": "ارتباط با پشتیبانی &rarr;"
@@ -403,7 +411,6 @@ document.addEventListener('click', function(e) {
             if (map[text]) {
                 node.nodeValue = node.nodeValue.replace(text, map[text]);
             } else {
-                // Sort keys by length descending to avoid partial matches
                 const keys = Object.keys(map).sort((a, b) => b.length - a.length);
                 for (const key of keys) {
                     if (text.includes(key) && key.length > 2) {
@@ -423,19 +430,34 @@ document.addEventListener('click', function(e) {
     }
 
     function injectAssets() {
-        if (!document.getElementById('vazir-font')) {
-            const link = document.createElement('link');
-            link.id = 'vazir-font';
-            link.href = 'https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css';
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            document.head.appendChild(link);
-        }
-
         if (!document.getElementById('rtl-styles')) {
             const style = document.createElement('style');
             style.id = 'rtl-styles';
             style.innerHTML = `
+                @font-face {
+                    font-family: 'Vazirmatn';
+                    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Regular.woff2') format('woff2'),
+                         url('https://unpkg.com/vazirmatn@33.0.3/fonts/webfonts/Vazirmatn-Regular.woff2') format('woff2');
+                    font-weight: 400;
+                    font-style: normal;
+                    font-display: swap;
+                }
+                @font-face {
+                    font-family: 'Vazirmatn';
+                    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Medium.woff2') format('woff2'),
+                         url('https://unpkg.com/vazirmatn@33.0.3/fonts/webfonts/Vazirmatn-Medium.woff2') format('woff2');
+                    font-weight: 500;
+                    font-style: normal;
+                    font-display: swap;
+                }
+                @font-face {
+                    font-family: 'Vazirmatn';
+                    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Bold.woff2') format('woff2'),
+                         url('https://unpkg.com/vazirmatn@33.0.3/fonts/webfonts/Vazirmatn-Bold.woff2') format('woff2');
+                    font-weight: 700;
+                    font-style: normal;
+                    font-display: swap;
+                }
                 [dir="rtl"] {
                     font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif !important;
                 }
