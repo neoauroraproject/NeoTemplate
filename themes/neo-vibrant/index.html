@@ -24,8 +24,14 @@
             <div class="user-profile">
                 <!-- Fallback to 'A' if email is empty (JS will replace this with first letter of subTitle) -->
                 <div class="avatar" id="user-avatar">U</div>
-                <h2 style="margin:0; font-size: 1rem;" id="display-name">{{ range $i, $e := .emails }}{{ if $i }}, {{ end }}{{ $e }}{{ end }}</h2>
+                <h2 style="margin:0; font-size: 1rem;" id="display-name"><span style="opacity:0.6; font-size:0.8rem; font-weight:400; margin-right:4px;">Client:</span>{{ range $i, $e := .emails }}{{ if $i }}, {{ end }}{{ $e }}{{ end }}</h2>
             </div>
+            
+            <a href="{{ .subSupportUrl }}" target="_blank" style="display:flex; align-items:center; gap:6px; background:var(--primary); color:white; text-decoration:none; padding:8px 16px; border-radius:12px; font-weight:600; font-size:0.875rem; margin-right:12px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Support
+            </a>
+            
             <button id="theme-toggle" class="btn-icon" aria-label="Toggle Theme">
                 <!-- Sun/Moon Icon -->
                 <svg class="theme-icon-light" style="display:none;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
