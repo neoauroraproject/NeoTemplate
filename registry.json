@@ -5,36 +5,61 @@
       "id": "neo-default",
       "name": "Neo Default",
       "description": "Clean, official reference template for Sanaei Panel.",
+      "type": "theme",
       "latest": "1.0.0",
-      "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/themes/neo-default/manifest.json"
+      "versions": {
+        "1.0.0": {
+          "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/packages/neo-default.zip"
+        }
+      }
     },
     {
       "id": "neo-eclipse",
       "name": "Neo Eclipse",
       "description": "Dark, structured, and professional fintech app aesthetic.",
+      "type": "theme",
       "latest": "1.0.0",
-      "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/themes/neo-eclipse/manifest.json"
+      "versions": {
+        "1.0.0": {
+          "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/packages/neo-eclipse.zip"
+        }
+      }
     },
     {
       "id": "neo-glass",
       "name": "Neo Glass",
       "description": "iOS 18 frosted glassmorphism with dynamic glowing orbs.",
+      "type": "theme",
       "latest": "1.0.0",
-      "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/themes/neo-glass/manifest.json"
+      "versions": {
+        "1.0.0": {
+          "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/packages/neo-glass.zip"
+        }
+      }
     },
     {
       "id": "neo-minimal",
       "name": "Neo Minimal",
       "description": "High contrast, big typography, and absolute simplicity.",
+      "type": "theme",
       "latest": "1.0.0",
-      "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/themes/neo-minimal/manifest.json"
+      "versions": {
+        "1.0.0": {
+          "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/packages/neo-minimal.zip"
+        }
+      }
     },
     {
       "id": "neo-vibrant",
       "name": "Neo Vibrant",
       "description": "Energetic, glowing neon colors on dark backgrounds.",
+      "type": "theme",
       "latest": "1.0.0",
-      "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/themes/neo-vibrant/manifest.json"
+      "versions": {
+        "1.0.0": {
+          "url": "https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/packages/neo-vibrant.zip"
+        }
+      }
     }
   ]
 }
