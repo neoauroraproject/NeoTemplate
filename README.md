@@ -17,19 +17,11 @@ bash <(curl -Ls https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/m
 ```
 *(پس از اجرا، دستور `neotemplate` را بزنید تا منوی مدیریت قالبها باز شود و به راحتی بتوانید قالب دلخواهتون رو نصب یا آپدیت کنید)*
 
-### روش دوم: نصب دستی (در صورت مشکل شبکه)
-اگر در اجرای دستور بالا به دلیل محدودیت‌های شبکه سرور به مشکل خوردید، می‌توانید ابتدا مخزن را کلون کرده و اسکریپت را اجرا کنید:
+### مرحله مهم: تنظیم قالب در پنل
+پس از نصب و فعال‌سازی موفق هر قالب در منوی مدیریت (`neotemplate`)، به شما یک مسیر (آدرس فایل) داده می‌شود. به عنوان مثال:
+`/etc/3x-ui/sub_templates/neo-vibrant/`
 
-```bash
-# ۱. کلون کردن مخزن
-git clone --depth 1 https://github.com/neoauroraproject/NeoTemplate.git
-
-# ۲. ورود به پوشه پروژه
-cd NeoTemplate
-
-# ۳. اجرای اسکریپت نصب به صورت محلی
-bash install.sh
-```
+**بسیار مهم:** شما باید این مسیر را کپی کرده و در تنظیمات پنل ثنایی (بخش Custom Subscription Template) دقیقاً در کادر مربوطه جای‌گذاری (Paste) کنید تا قالب روی لینک‌های اشتراک شما اعمال شود!
 
 ---
 
@@ -45,19 +37,11 @@ bash <(curl -Ls https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/m
 ```
 *(After installation, simply run `neotemplate` to launch the Theme Manager menu where you can easily install or update your favorite themes)*
 
-### Method 2: Manual Installation (If automatic installation fails)
-If you face connection/network issues with the one-liner command, you can clone the repository and run the installation script locally:
+### Important Step: Applying the Theme
+After successfully installing and activating a theme via the manager menu (`neotemplate`), you will be provided with a specific path. For example:
+`/etc/3x-ui/sub_templates/neo-vibrant/`
 
-```bash
-# 1. Clone the repository
-git clone --depth 1 https://github.com/neoauroraproject/NeoTemplate.git
-
-# 2. Navigate to project directory
-cd NeoTemplate
-
-# 3. Run the installer locally
-bash install.sh
-```
+**Very Important:** You must copy this exact path and paste it into the Sanaei Panel settings (in the Custom Subscription Template section) to apply the theme to your subscription links!
 
 ---
 
