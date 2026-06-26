@@ -59,7 +59,7 @@ function initAvatar() {
     const avatarEl = document.getElementById('user-avatar');
     if (nameEl && avatarEl) {
         const name = nameEl.innerText.trim();
-        if (name && !name.includes('{{')) {
+        if (name && !name.includes('{' + '{')) {
             avatarEl.innerText = name.charAt(0).toUpperCase();
         }
     }
