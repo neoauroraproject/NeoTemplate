@@ -1,5 +1,7 @@
 # NeoTemplate
 
+![Views](https://komarev.com/ghpvc/?username=neoauroraproject&repo=NeoTemplate&label=Views&color=orange&style=flat-square)
+
 **NeoTemplate** is a collection of modern, ultra-premium subscription page templates for [3x-ui](https://github.com/MHSanaei/3x-ui) / [Sanaei Panel](https://github.com/MHSanaei/3x-ui).
 
 ---
