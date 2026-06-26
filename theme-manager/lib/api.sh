@@ -3,7 +3,8 @@
 fetch_repository() {
     local repo_url="$1"
     local cache_file="$2"
-    curl -sSL "$repo_url" -o "$cache_file"
+    local timestamp=$(date +%s)
+    curl -sSL "${repo_url}?t=${timestamp}" -o "$cache_file"
     if [[ $? -ne 0 ]]; then
         log_error "Failed to fetch repository data."
         return 1
