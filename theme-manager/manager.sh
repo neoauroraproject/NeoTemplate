@@ -103,10 +103,35 @@ while true; do
             read -p "Press enter to continue..."
             ;;
         4)
-            list_installed_packages "$CONFIG_FILE"
-            read -p "Enter package ID to remove: " remove_id
-            if [[ -n "$remove_id" ]]; then
-                remove_package "$CONFIG_FILE" "$remove_id"
+            echo "Installed Packages:"
+            install_dir=$(get_config_val "installDirectory" "$CONFIG_FILE")
+            if [[ -d "$install_dir" ]]; then
+                mapfile -t installed_dirs < <(find "$install_dir" -mindepth 1 -maxdepth 1 -type d)
+                if [[ ${#installed_dirs[@]} -eq 0 ]]; then
+                    echo "No packages installed."
+                else
+                    for i in "${!installed_dirs[@]}"; do
+                        dir="${installed_dirs[$i]}"
+                        if [[ -f "$dir/manifest.json" ]]; then
+                            id=$(jq -r '.id' "$dir/manifest.json")
+                            name=$(jq -r '.name' "$dir/manifest.json")
+                            echo "  $((i+1))) $name ($id)"
+                        fi
+                    done
+                    echo ""
+                    read -p "Select a package to remove (1-${#installed_dirs[@]}): " r_sel
+                    if [[ "$r_sel" =~ ^[0-9]+$ ]] && [ "$r_sel" -ge 1 ] && [ "$r_sel" -le "${#installed_dirs[@]}" ]; then
+                        sel_dir="${installed_dirs[$((r_sel-1))]}"
+                        pkg_id=$(jq -r '.id' "$sel_dir/manifest.json")
+                        if [[ -n "$pkg_id" ]]; then
+                            remove_package "$CONFIG_FILE" "$pkg_id"
+                        fi
+                    else
+                        echo "Invalid selection or cancelled."
+                    fi
+                fi
+            else
+                echo "No packages installed."
             fi
             read -p "Press enter to continue..."
             ;;
