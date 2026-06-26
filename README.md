@@ -21,7 +21,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/m
 پس از نصب و فعال‌سازی موفق هر قالب در منوی مدیریت (`neotemplate`)، به شما یک مسیر (آدرس فایل) داده می‌شود. به عنوان مثال:
 `/etc/3x-ui/sub_templates/neo-vibrant/`
 
-**بسیار مهم:** شما باید این مسیر را کپی کرده و در تنظیمات پنل ثنایی (بخش Custom Subscription Template) دقیقاً در کادر مربوطه جای‌گذاری (Paste) کنید تا قالب روی لینک‌های اشتراک شما اعمال شود!
+**بسیار مهم:** شما باید این مسیر را کپی کرده و در تنظیمات پنل ثنایی (Panel Settings -> Subscription -> Profile -> Sub Theme Directory) دقیقاً در کادر مربوطه جای‌گذاری (Paste) کنید تا قالب روی لینک‌های اشتراک شما اعمال شود!
 
 ---
 
@@ -41,7 +41,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/m
 After successfully installing and activating a theme via the manager menu (`neotemplate`), you will be provided with a specific path. For example:
 `/etc/3x-ui/sub_templates/neo-vibrant/`
 
-**Very Important:** You must copy this exact path and paste it into the Sanaei Panel settings (in the Custom Subscription Template section) to apply the theme to your subscription links!
+**Very Important:** You must copy this exact path and paste it into the Sanaei Panel settings (Panel Settings -> Subscription -> Profile -> Sub Theme Directory) to apply the theme to your subscription links!
 
 ---
 
