@@ -294,8 +294,8 @@ document.addEventListener('click', function(e) {
         while (parent) {
             if (parent.id === 'raw-links-container' || 
                 parent.id === 'display-name' || 
-                parent.classList.contains('raw-link') ||
-                parent.classList.contains('avatar') ||
+                (parent.classList && parent.classList.contains('raw-link')) ||
+                (parent.classList && parent.classList.contains('avatar')) ||
                 parent.tagName === 'SCRIPT' || 
                 parent.tagName === 'STYLE') {
                 return true;
@@ -317,7 +317,9 @@ document.addEventListener('click', function(e) {
             if (map[text]) {
                 node.nodeValue = node.nodeValue.replace(text, map[text]);
             } else {
-                for (const key in map) {
+                // Sort keys by length descending to avoid partial matches
+                const keys = Object.keys(map).sort((a, b) => b.length - a.length);
+                for (const key of keys) {
                     if (text.includes(key) && key.length > 2) {
                         node.nodeValue = node.nodeValue.replace(key, map[key]);
                     }
