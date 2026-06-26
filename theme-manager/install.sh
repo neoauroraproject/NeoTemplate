@@ -44,10 +44,11 @@ chmod +x "$INSTALL_DIR/install.sh"
 chmod +x "$INSTALL_DIR/lib/"*.sh
 
 # Create symlink for easy access
-ln -sf "$INSTALL_DIR/manager.sh" "/usr/local/bin/3x-ui-theme"
+ln -sf "$INSTALL_DIR/manager.sh" "/usr/local/bin/neotemplate"
+ln -sf "$INSTALL_DIR/manager.sh" "/usr/local/bin/3x-ui-theme" # Keep old alias just in case
 
 # Clean up
 rm -rf "$TMP_DIR"
 
 echo "Installation complete!"
-echo "You can now run '3x-ui-theme' to start the manager."
+echo "You can now run 'neotemplate' to start the manager."

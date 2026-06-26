@@ -14,7 +14,7 @@
 ```bash
 bash <(curl -Ls https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/theme-manager/install.sh)
 ```
-*(پس از اجرا، منوی مدیریت قالب‌ها باز میشه و به راحتی می‌تونید قالب دلخواه‌تون رو نصب یا آپدیت کنید)*
+*(پس از اجرا، دستور `neotemplate` را بزنید تا منوی مدیریت قالب‌ها باز شود و به راحتی بتوانید قالب دلخواه‌تون رو نصب یا آپدیت کنید)*
 
 ---
 
@@ -28,7 +28,7 @@ Installation is extremely simple. Just copy and paste the following command into
 ```bash
 bash <(curl -Ls https://raw.githubusercontent.com/neoauroraproject/NeoTemplate/main/theme-manager/install.sh)
 ```
-*(This will launch the Theme Manager menu where you can easily install or update your favorite themes)*
+*(After installation, simply run `neotemplate` to launch the Theme Manager menu where you can easily install or update your favorite themes)*
 
 ---
 *Built with ❤️ for the 3x-ui community.*
