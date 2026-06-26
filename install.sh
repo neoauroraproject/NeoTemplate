@@ -31,15 +31,15 @@ if [ "$USE_LOCAL" = true ]; then
     echo "Using local repository files from $LOCAL_SRC_DIR..."
 else
     # Install dependencies if missing
-    if ! command -v git &> /dev/null; then
-        echo "Installing git..."
-        apt-get update && apt-get install -y git
+    if ! command -v curl &> /dev/null || ! command -v tar &> /dev/null; then
+        echo "Installing dependencies (curl, tar)..."
+        apt-get update && apt-get install -y curl tar
     fi
 
-    # Clone repository to a temporary directory
+    # Download repository archive to a temporary directory
     TMP_DIR=$(mktemp -d)
     echo "Downloading NeoTemplate repository..."
-    git clone --depth 1 "$REPO_URL" "$TMP_DIR"
+    curl -sL "https://github.com/neoauroraproject/NeoTemplate/archive/refs/heads/main.tar.gz" | tar xz -C "$TMP_DIR" --strip-components=1
 fi
 
 # Create directories
