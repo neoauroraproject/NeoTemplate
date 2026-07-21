@@ -47,7 +47,6 @@ After successfully installing and activating a theme via the manager menu (`neot
 
 ## 📸 Screenshots
 
-<details>
 <summary>Click to view theme screenshots / برای مشاهده عکس قالبها کلیک کنید</summary>
 
 ### Neo Vibrant
@@ -62,7 +61,6 @@ After successfully installing and activating a theme via the manager menu (`neot
 ### Neo Glass
 ![Neo Glass](themes/preview/glass.jpg)
 
-</details>
 
 ---
 
