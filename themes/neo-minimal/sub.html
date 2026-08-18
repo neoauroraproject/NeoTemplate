@@ -89,8 +89,13 @@
             <div id="raw-links-container" style="display:none;">
                 {{ range .links }}
                 <div class="raw-link">{{ . }}</div>
-                {{ end }}
-            </div>
+                    {{ end }}
+                </div>
+                <div id="client-emails-container" style="display:none;">
+                    {{ range .emails }}
+                    <span class="client-email">{{ . }}</span>
+                    {{ end }}
+                </div>
             <div id="configs-container" class="config-list-container" style="display:flex; flex-direction:column; gap:16px;"></div>
     
         </div>

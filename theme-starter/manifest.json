@@ -2,7 +2,7 @@
   "id": "theme.starter",
   "type": "theme",
   "name": "NeoTemplate SDK",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "NeoTemplate Team",
   "description": "The official NeoTemplate developer toolkit and starter theme.",
   "minPanelVersion": "2.0.0",

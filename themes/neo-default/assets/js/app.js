@@ -250,6 +250,218 @@ function timeAgo(date) {
 
 // renderConfigs replaced below
 
+function collectClientEmails() {
+    var emails = [];
+    var nodes = document.querySelectorAll('#client-emails-container .client-email');
+    for (var i = 0; i < nodes.length; i++) {
+        var t = nodes[i].innerText.trim();
+        if (t) emails.push(t);
+    }
+    return emails;
+}
+
+function decodeBase64Utf8(str) {
+    var s = String(str || '').replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    try {
+        var binary = atob(s);
+        if (typeof TextDecoder !== 'undefined') {
+            var bytes = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+        return decodeURIComponent(escape(binary));
+    } catch (e) {
+        return '';
+    }
+}
+
+function parseQueryParams(qs) {
+    var out = {};
+    if (!qs) return out;
+    var parts = qs.split('&');
+    for (var i = 0; i < parts.length; i++) {
+        var pair = parts[i];
+        if (!pair) continue;
+        var eq = pair.indexOf('=');
+        var k = eq === -1 ? pair : pair.substring(0, eq);
+        var v = eq === -1 ? '' : pair.substring(eq + 1);
+        try { k = decodeURIComponent(k); } catch (e) {}
+        try { v = decodeURIComponent(v); } catch (e) {}
+        out[String(k).toLowerCase()] = v;
+    }
+    return out;
+}
+
+function parseHostPort(hostPort) {
+    var result = { address: '', port: '' };
+    if (!hostPort) return result;
+    if (hostPort.charAt(0) === '[') {
+        var end = hostPort.indexOf(']');
+        if (end !== -1) {
+            result.address = hostPort.substring(1, end);
+            if (hostPort.charAt(end + 1) === ':') result.port = hostPort.substring(end + 2);
+            return result;
+        }
+    }
+    var colon = hostPort.lastIndexOf(':');
+    if (colon !== -1 && hostPort.indexOf(':') === colon) {
+        result.address = hostPort.substring(0, colon);
+        result.port = hostPort.substring(colon + 1);
+    } else {
+        result.address = hostPort;
+    }
+    return result;
+}
+
+function parseShareLink(link) {
+    var result = { protocol: 'vpn', address: '', port: '', sni: '', hostHeader: '', remark: '' };
+    if (!link) return result;
+    var hashIndex = link.indexOf('#');
+    var withoutHash = link;
+    if (hashIndex !== -1) {
+        try {
+            result.remark = decodeURIComponent(link.substring(hashIndex + 1).replace(/\+/g, '%20'));
+        } catch (e) {
+            result.remark = link.substring(hashIndex + 1);
+        }
+        withoutHash = link.substring(0, hashIndex);
+    }
+    var protoIndex = withoutHash.indexOf('://');
+    if (protoIndex === -1) return result;
+    result.protocol = withoutHash.substring(0, protoIndex).toLowerCase();
+    var rest = withoutHash.substring(protoIndex + 3);
+
+    if (result.protocol === 'vmess') {
+        try {
+            var json = JSON.parse(decodeBase64Utf8(rest));
+            result.address = json.add || json.address || '';
+            result.port = String(json.port || '');
+            result.sni = json.sni || '';
+            result.hostHeader = json.host || '';
+            if (json.ps) result.remark = String(json.ps);
+        } catch (e) {}
+        return result;
+    }
+
+    var qIndex = rest.indexOf('?');
+    var query = {};
+    if (qIndex !== -1) {
+        query = parseQueryParams(rest.substring(qIndex + 1));
+        rest = rest.substring(0, qIndex);
+    }
+    result.sni = query.sni || query.peer || query.servername || '';
+    result.hostHeader = query.host || '';
+
+    var at = rest.lastIndexOf('@');
+    var hostPort = at !== -1 ? rest.substring(at + 1) : rest;
+    var hp = parseHostPort(hostPort);
+    result.address = hp.address;
+    result.port = hp.port;
+
+    if (!result.address && (result.protocol === 'ss' || result.protocol === 'ssr')) {
+        var decoded = decodeBase64Utf8(at !== -1 ? rest.substring(0, at) : rest);
+        var decodedAt = decoded.lastIndexOf('@');
+        if (decodedAt !== -1) {
+            hp = parseHostPort(decoded.substring(decodedAt + 1));
+            result.address = hp.address;
+            result.port = hp.port;
+        }
+    }
+    return result;
+}
+
+function isPrivateOrLocalHost(address) {
+    if (!address) return true;
+    return /^(127\.|0\.|localhost$|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1$|0:0:0:0:0:0:0:1$)/i.test(address);
+}
+
+function pickHost(parsed) {
+    var addr = (parsed.address || '').trim();
+    var sni = (parsed.sni || parsed.hostHeader || '').trim();
+    if (addr && !isPrivateOrLocalHost(addr)) return addr;
+    if (sni) return sni;
+    return addr;
+}
+
+function stripEmailFromRemark(remark, emails) {
+    var name = remark;
+    for (var i = 0; i < emails.length; i++) {
+        var email = emails[i];
+        if (!email) continue;
+        if (name === email) return '';
+        var suffixes = ['-' + email, '_' + email, ' ' + email, '|' + email, '/' + email];
+        for (var j = 0; j < suffixes.length; j++) {
+            var p = suffixes[j];
+            if (name.length > p.length && name.substring(name.length - p.length) === p) {
+                name = name.substring(0, name.length - p.length).trim();
+            }
+        }
+    }
+    return name.trim();
+}
+
+function configDisplayName(parsed, emails) {
+    var host = pickHost(parsed);
+    var remark = (parsed.remark || '').trim();
+    if (!remark) return host;
+    if (!emails.length) return host || remark;
+    for (var i = 0; i < emails.length; i++) {
+        if (remark === emails[i]) return host || remark;
+    }
+    var stripped = stripEmailFromRemark(remark, emails);
+    if (stripped) {
+        for (var k = 0; k < emails.length; k++) {
+            if (stripped === emails[k]) return host || remark;
+        }
+        return stripped;
+    }
+    return host || remark;
+}
+
+function uniquifyConfigNames(items) {
+    function recount() {
+        var counts = {};
+        for (var i = 0; i < items.length; i++) {
+            counts[items[i].name] = (counts[items[i].name] || 0) + 1;
+        }
+        return counts;
+    }
+    var counts = recount();
+    for (var i = 0; i < items.length; i++) {
+        if (counts[items[i].name] > 1 && items[i].parsed.port) {
+            items[i].name = items[i].name + ':' + items[i].parsed.port;
+        }
+    }
+    counts = recount();
+    for (var j = 0; j < items.length; j++) {
+        if (counts[items[j].name] > 1 && items[j].protocol) {
+            items[j].name = items[j].name + ' ' + items[j].protocol;
+        }
+    }
+}
+
+function applyConfigName(link, name) {
+    if (!link || !name) return link;
+    var protoIndex = link.indexOf('://');
+    var protocol = protoIndex === -1 ? '' : link.substring(0, protoIndex).toLowerCase();
+    if (protocol === 'vmess') {
+        var hashIndex = link.indexOf('#');
+        var body = hashIndex === -1 ? link.substring(8) : link.substring(8, hashIndex);
+        try {
+            var json = JSON.parse(decodeBase64Utf8(body));
+            json.ps = name;
+            var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(json))));
+            return 'vmess://' + encoded + '#' + encodeURIComponent(name);
+        } catch (e) {}
+    }
+    var hash = link.indexOf('#');
+    var base = hash === -1 ? link : link.substring(0, hash);
+    return base + '#' + encodeURIComponent(name);
+}
+
+
+
 
 function renderConfigs() {
     var container = document.getElementById('configs-container');
@@ -268,24 +480,27 @@ function renderConfigs() {
         return;
     }
 
-    var html = '';
+    var emails = collectClientEmails();
+    var items = [];
     for (var j = 0; j < rawLinks.length; j++) {
-        var link = rawLinks[j];
-        var name = "Config " + (j + 1);
-        var protocol = "vpn";
-        try {
-            var hashIndex = link.indexOf('#');
-            if (hashIndex !== -1) {
-                name = decodeURIComponent(link.substring(hashIndex + 1));
-            }
-            var protoIndex = link.indexOf('://');
-            if (protoIndex !== -1) {
-                protocol = link.substring(0, protoIndex).toLowerCase();
-            }
-        } catch (e) {}
+        var parsed = parseShareLink(rawLinks[j]);
+        items.push({
+            raw: rawLinks[j],
+            parsed: parsed,
+            protocol: parsed.protocol || 'vpn',
+            name: configDisplayName(parsed, emails) || ('Config ' + (j + 1))
+        });
+    }
+    uniquifyConfigNames(items);
+
+    var html = '';
+    for (var j = 0; j < items.length; j++) {
+        var name = items[j].name;
+        var protocol = items[j].protocol;
+        var link = applyConfigName(items[j].raw, name);
         
-        var safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        var safeLink = link.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        var safeName = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        var safeLink = link.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         
         html += '<div style="background: var(--pill-bg, var(--bg-card, rgba(255,255,255,0.05))); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(128,128,128,0.1); margin-bottom: 12px;">';
         html += '<div style="display:flex; align-items:center; gap: 12px; overflow: hidden; flex: 1;">';
@@ -431,7 +646,8 @@ document.addEventListener('click', function(e) {
     function shouldSkipNode(node) {
         let parent = node.parentNode;
         while (parent) {
-            if (parent.id === 'raw-links-container' || 
+            if (parent.id === 'raw-links-container' ||
+                parent.id === 'client-emails-container' ||
                 parent.id === 'display-name' || 
                 (parent.classList && parent.classList.contains('raw-link')) ||
                 (parent.classList && parent.classList.contains('avatar')) ||
