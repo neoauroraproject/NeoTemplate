@@ -2,6 +2,10 @@
 
 All notable changes to the NeoTemplate SDK will be documented in this file.
 
+## [1.1.2] - 2026-08-18
+### Fixed
+- Inline CSS and JavaScript in production packages so 3x-ui subscription pages load without 404s on `main.css` and `app.js`.
+
 ## [1.1.1] - 2026-08-18
 ### Fixed
 - Config list names now prefer the inbound/host address instead of the client email.

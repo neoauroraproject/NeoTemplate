@@ -58,6 +58,64 @@ build_package() {
     find "$staging_dir" -name ".DS_Store" -type f -delete
     find "$staging_dir" -name "Thumbs.db" -type f -delete
     find "$staging_dir" -name "desktop.ini" -type f -delete
+    find "$staging_dir" -name "*.bat" -type f -delete
+
+    # 3x-ui only renders index.html/sub.html and does not serve /assets.
+    # Inline CSS/JS so subscription pages do not 404.
+    log_info "Inlining CSS and JavaScript into HTML..."
+    if ! command -v python3 >/dev/null 2>&1 && ! command -v python >/dev/null 2>&1; then
+        log_error "python3 is required to inline theme assets."
+        safe_remove_dir "$staging_base"
+        return 1
+    fi
+    local py_bin
+    py_bin=$(command -v python3 || command -v python)
+    "$py_bin" - "$staging_dir" <<'PY'
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+css_path = root / "assets" / "css" / "main.css"
+js_path = root / "assets" / "js" / "app.js"
+if not css_path.is_file() or not js_path.is_file():
+    raise SystemExit("assets/css/main.css or assets/js/app.js missing")
+
+css = css_path.read_text(encoding="utf-8")
+js = js_path.read_text(encoding="utf-8")
+css_tag = '<link rel="stylesheet" href="assets/css/main.css">'
+js_tag = '<script src="assets/js/app.js"></script>'
+
+for name in ("index.html", "sub.html"):
+    path = root / name
+    if not path.is_file():
+        continue
+    html = path.read_text(encoding="utf-8")
+    if css_tag not in html or js_tag not in html:
+        raise SystemExit(f"asset tags missing in {name}")
+    html = html.replace(css_tag, "<style>\n" + css + "\n</style>", 1)
+    html = html.replace(js_tag, "<script>\n" + js + "\n</script>", 1)
+    path.write_text(html, encoding="utf-8")
+
+# Flatten preview images to zip root, matching previous production packages
+images = root / "assets" / "images"
+if images.is_dir():
+    for img in images.iterdir():
+        if img.is_file():
+            target = root / img.name
+            if not target.exists():
+                target.write_bytes(img.read_bytes())
+
+# Drop source asset folders after inlining
+import shutil
+assets = root / "assets"
+if assets.is_dir():
+    shutil.rmtree(assets)
+PY
+    if [[ $? -ne 0 ]]; then
+        log_error "Failed to inline CSS/JS into HTML."
+        safe_remove_dir "$staging_base"
+        return 1
+    fi
     
     # 4. Final Validation (No absolute paths to local files, no preview code)
     # Simple check if there are any remaining references to 'preview/' or 'mock-data' in html
