@@ -446,8 +446,9 @@ body {
     background: var(--primary, var(--accent, #3b82f6));
     flex-shrink: 0;
 }
-.neo-app-meta { flex: 1; min-width: 0; }
+.neo-app-meta { flex: 1; min-width: 0; display:flex; flex-direction:column; gap:2px; }
 .neo-app-name {
+    display: block;
     font-size: 0.9rem;
     font-weight: 650;
     white-space: nowrap;
@@ -455,6 +456,7 @@ body {
     text-overflow: ellipsis;
 }
 .neo-app-desc {
+    display: block;
     font-size: 0.72rem;
     opacity: 0.65;
 }
@@ -477,3 +479,61 @@ body {
     .neo-online-dot { transition: none !important; }
 }
 /* === NeoTemplate 1.2 shared components END === */
+
+/* === NeoTemplate 1.2.1 modal apps === */
+.neo-apps-section { display: none !important; }
+.neo-apps-modal-block {
+    margin-top: 4px;
+}
+.neo-apps-modal-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.65;
+    margin: 0 0 10px;
+}
+#action-modal .neo-apps-tabs {
+    margin-bottom: 10px;
+}
+#action-modal .neo-app-btn {
+    min-height: 52px;
+}
+#action-modal .neo-app-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+#action-modal .neo-app-name,
+#action-modal .neo-app-desc {
+    display: block;
+}
+#action-modal .neo-apps-hint {
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+.quick-actions-pill {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    z-index: 90;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: var(--bg-card, #fff);
+    color: var(--text-main, var(--text-primary, #0f172a));
+    border: 1px solid rgba(128,128,128,0.18);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    cursor: pointer;
+    font-weight: 650;
+    font-size: 0.875rem;
+}
+.quick-actions-pill:focus-visible {
+    outline: 2px solid var(--primary, #3b82f6);
+    outline-offset: 2px;
+}
+/* === NeoTemplate 1.2.1 modal apps END === */

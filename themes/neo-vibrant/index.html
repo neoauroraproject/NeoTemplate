@@ -205,13 +205,7 @@
                 </div>
             </div>
         </section>
-
-        <section class="neo-apps-section" aria-label="Add to app" style="margin-top:24px;">
-            <h2 class="section-title" style="font-size:1rem; margin-bottom:12px;">Add to app</h2>
-            <div id="apps-import-root" class="neo-apps"></div>
-        </section>
-
-        <!-- Footer -->
+<!-- Footer -->
         <footer class="footer" style="padding-bottom: 80px;">
             <p><a href="https://github.com/neoauroraproject/NeoTemplate" target="_blank" style="opacity: 0.5; transition: opacity 0.2s; color: inherit; text-decoration: none;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">Powered by NeoTemplate</a></p>
         </footer>
@@ -219,25 +213,33 @@
     </main>
     
     <!-- Quick Actions Pill -->
-    <div class="quick-actions-pill" onclick="document.getElementById('action-modal').style.display='flex'">
+    <div class="quick-actions-pill" onclick="openQuickActions()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
         <span>Quick Actions</span>
     </div>
 
     <!-- Quick Actions Modal -->
+    <!-- Quick Actions Modal -->
     <div class="modal" id="action-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:999; align-items:center; justify-content:center; padding:24px;">
-        <div class="glass-card" style="padding:24px; width:100%; max-width:400px; display:flex; flex-direction:column; background: var(--bg-card); border: var(--card-border); border-radius: var(--radius-card); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+        <div class="glass-card" style="padding:24px; width:100%; max-width:400px; max-height:85vh; overflow:auto; display:flex; flex-direction:column; background: var(--bg-card); border: var(--card-border); border-radius: var(--radius-card); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
                 <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Quick Actions</h3>
                 <button style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('action-modal').style.display='none'">✕</button>
             </div>
             <button class="copy-btn" style="padding: 12px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); text-decoration: none; display: flex; justify-content: center; width: 100%; border: 1px solid var(--card-border); margin-bottom: 12px; cursor: pointer; font-weight: 600; font-family: inherit;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
-<a class="modal-btn" style="padding: 12px; border-radius: 12px; background: var(--success); color: white; text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; margin-top: 12px; cursor: pointer; font-weight: 600; font-family: inherit;" href="{{ .subSupportUrl }}" target="_blank">
+            <div class="neo-apps-modal-block">
+                <div class="neo-apps-modal-title">Add to app</div>
+                <div id="apps-import-root" class="neo-apps"></div>
+            </div>
+
+            <a class="modal-btn" style="padding: 12px; border-radius: 12px; background: var(--success); color: white; text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; margin-top: 12px; cursor: pointer; font-weight: 600; font-family: inherit;" href="{{ .subSupportUrl }}" target="_blank">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 Contact Support
             </a>
         </div>
     </div>
+
+
 
     <!-- QR Code Modal -->
     <div class="modal" id="qr-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:999; align-items:center; justify-content:center; padding:24px;">

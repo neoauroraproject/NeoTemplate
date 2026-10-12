@@ -2,6 +2,11 @@
 
 All notable changes to the NeoTemplate SDK will be documented in this file.
 
+## [1.2.1] - 2026-10-12
+### Fixed
+- Move Add to App into the Quick Actions modal so the main page stays clean.
+- Fix app-row typography so name and description no longer collide.
+
 ## [1.2.0] - 2026-10-12
 ### Added
 - Live online/offline status with `?format=info` polling.

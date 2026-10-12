@@ -177,13 +177,7 @@
                 </div>
             </div>
         </section>
-
-        <section class="neo-apps-section" aria-label="Add to app" style="margin-top:24px;">
-            <h2 class="section-title" style="font-size:1rem; margin-bottom:12px;">Add to app</h2>
-            <div id="apps-import-root" class="neo-apps"></div>
-        </section>
-
-        <!-- Footer -->
+<!-- Footer -->
         <footer class="footer">
             <p><a href="https://github.com/neoauroraproject/NeoTemplate" target="_blank" style="opacity: 0.5; transition: opacity 0.2s; color: inherit; text-decoration: none;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">Powered by NeoTemplate</a></p>
         </footer>
@@ -200,6 +194,30 @@
             <button class="btn btn-primary" style="margin-top:24px; width:100%;" onclick="document.getElementById('qr-modal').style.display='none'">Close</button>
         </div>
     </div>
+
+
+    <div class="quick-actions-pill" onclick="openQuickActions()" role="button" tabindex="0" aria-label="Quick Actions">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+        <span>Quick Actions</span>
+    </div>
+
+        <div class="modal" id="action-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); z-index:999; align-items:center; justify-content:center; padding:24px;">
+        <div class="modal-content card" style="width:100%; max-width:420px; max-height:85vh; overflow:auto; padding:20px; border-radius:16px; background:var(--bg-card, #fff); color:var(--text-primary, inherit); border:1px solid rgba(128,128,128,0.15);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:12px;">
+                <h3 style="font-size:1.15rem; font-weight:650; margin:0;">Quick Actions</h3>
+                <button type="button" aria-label="Close" style="background:none; border:none; color:inherit; font-size:1.4rem; cursor:pointer; min-width:44px; min-height:44px;" onclick="document.getElementById('action-modal').style.display='none'">✕</button>
+            </div>
+            <button type="button" class="btn btn-primary" style="width:100%; margin-bottom:16px;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
+            <div class="neo-apps-modal-block">
+                <div class="neo-apps-modal-title">Add to app</div>
+                <div id="apps-import-root" class="neo-apps"></div>
+            </div>
+
+            <a href="{{ .subSupportUrl }}" target="_blank" class="btn" style="display:flex; justify-content:center; align-items:center; gap:8px; width:100%; margin-top:12px; text-decoration:none;">Contact Support</a>
+        </div>
+    </div>
+
+
 
 </body>
 </html>

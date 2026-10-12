@@ -776,6 +776,17 @@ document.addEventListener('click', function(e) {
 // === LANG ENHANCER END ===
 
 // === NeoTemplate 1.2 FEATURES START ===
+
+function openQuickActions() {
+    var modal = document.getElementById('action-modal');
+    if (!modal) return;
+    if (modal.classList) modal.classList.add('open');
+    modal.style.display = 'flex';
+    if (typeof renderApps === 'function') {
+        try { renderApps(); } catch (e) {}
+    }
+}
+
 (function () {
     function t(key, fallback) {
         var lang = localStorage.getItem('neo-lang') || 'en';

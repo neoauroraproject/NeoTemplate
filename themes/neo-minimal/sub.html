@@ -140,22 +140,18 @@
         </div>
         
         <button class="action-btn" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
-        <div class="footer" style="padding-bottom: 120px;">
+</div>
+<div class="footer" style="padding-bottom: 120px;">
             {{ .subTitle }} &bull; <a href="https://github.com/neoauroraproject/NeoTemplate" target="_blank" style="opacity: 0.5; transition: opacity 0.2s; color: inherit; text-decoration: none;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">Powered by NeoTemplate</a>
         </div>
     </div>
-
-        <section class="neo-apps-section" aria-label="Add to app" style="margin-top:24px;">
-            <h2 class="section-title" style="font-size:1rem; margin-bottom:12px;">Add to app</h2>
-            <div id="apps-import-root" class="neo-apps"></div>
-        </section>
-
-    <!-- Quick Actions Pill -->
-    <div class="quick-actions-pill" onclick="document.getElementById('action-modal').classList.add('open')">
+<!-- Quick Actions Pill -->
+    <div class="quick-actions-pill" onclick="openQuickActions()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
         <span>Quick Actions</span>
     </div>
 
+    <!-- Quick Actions Modal -->
     <!-- Quick Actions Modal -->
     <div class="modal" id="action-modal">
         <div class="modal-content">
@@ -164,8 +160,16 @@
                 <button style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('action-modal').classList.remove('open')">✕</button>
             </div>
             <button class="action-btn" style="margin-bottom: 12px; display:flex; justify-content:center;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
-</div>
+            <div class="neo-apps-modal-block">
+                <div class="neo-apps-modal-title">Add to app</div>
+                <div id="apps-import-root" class="neo-apps"></div>
+            </div>
+
+            <a href="{{ .subSupportUrl }}" target="_blank" class="action-btn" style="margin-top: 12px; display:flex; justify-content:center; text-decoration:none;">Contact Support</a>
+        </div>
     </div>
+
+
 
     <!-- Advanced Info Modal -->
     <div class="modal" id="adv-modal">
