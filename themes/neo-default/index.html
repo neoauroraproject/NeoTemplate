@@ -207,7 +207,10 @@
                 <h3 style="font-size:1.15rem; font-weight:650; margin:0;">Quick Actions</h3>
                 <button type="button" aria-label="Close" style="background:none; border:none; color:inherit; font-size:1.4rem; cursor:pointer; min-width:44px; min-height:44px;" onclick="document.getElementById('action-modal').style.display='none'">✕</button>
             </div>
-            <button type="button" class="btn btn-primary" style="width:100%; margin-bottom:16px;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
+            <div class="neo-sub-actions">
+                <button type="button" class="btn btn-primary neo-sub-copy" style="width:100%; margin-bottom:16px;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
+                <button type="button" class="neo-sub-qr btn btn-primary" onclick="showSubQR()" aria-label="Show subscription QR code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01"></path></svg><span class="neo-sub-qr-label">QR</span></button>
+            </div>
             <div class="neo-apps-modal-block">
                 <div class="neo-apps-modal-title">Add to app</div>
                 <div id="apps-import-root" class="neo-apps"></div>

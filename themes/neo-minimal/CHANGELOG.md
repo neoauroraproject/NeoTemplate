@@ -2,6 +2,10 @@
 
 All notable changes to the NeoTemplate SDK will be documented in this file.
 
+## [1.3.0] - 2026-10-12
+### Added
+- Subscription QR code button next to Copy Subscription Link (page and Quick Actions).
+
 ## [1.2.2] - 2026-10-12
 ### Fixed
 - Restore high-contrast Quick Actions pill so label/icon stay readable on dark themes.

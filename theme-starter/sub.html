@@ -155,9 +155,12 @@
                 <button class="btn-icon" onclick="document.getElementById('action-modal').classList.remove('open')">✖</button>
             </div>
             
-            <button class="btn btn-primary" style="margin-bottom: 12px; width: 100%;" onclick="copyToClipboard('{{ .subUrl }}', 'Subscription Link Copied!')">
+            <div class="neo-sub-actions">
+                <button class="btn btn-primary neo-sub-copy" style="margin-bottom: 12px; width: 100%;" onclick="copyToClipboard('{{ .subUrl }}', 'Subscription Link Copied!')">
                 Copy Subscription Link
             </button>
+                <button type="button" class="neo-sub-qr btn btn-primary" onclick="showSubQR()" aria-label="Show subscription QR code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01"></path></svg><span class="neo-sub-qr-label">QR</span></button>
+            </div>
 
             <div class="neo-apps-modal-block">
                 <div class="neo-apps-modal-title">Add to app</div>

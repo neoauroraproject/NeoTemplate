@@ -204,6 +204,7 @@ function showQR(link, name) {
         foreground: 'black'
     });
     
+    modal.classList.add('open');
     modal.style.display = 'flex';
 }
 
@@ -1189,3 +1190,63 @@ function openQuickActions() {
     });
 })();
 // === NeoTemplate 1.2 FEATURES END ===
+
+// === NeoTemplate 1.3.0 sub QR START ===
+function getSubscriptionUrl() {
+    var meta = document.getElementById('page-meta');
+    if (meta) {
+        var u = meta.getAttribute('data-sub-url');
+        if (u) return u;
+    }
+    return '';
+}
+
+function showSubQR() {
+    var url = getSubscriptionUrl();
+    if (!url) {
+        if (typeof showToast === 'function') showToast('Subscription URL missing');
+        else if (typeof showNotification === 'function') showNotification('Subscription URL missing');
+        return;
+    }
+    var title = 'Subscription';
+    var meta = document.getElementById('page-meta');
+    if (meta) {
+        var name = meta.getAttribute('data-sub-title');
+        if (name) title = name;
+    }
+    if (typeof showQR === 'function') {
+        showQR(url, title);
+        return;
+    }
+    // Fallback if showQR missing
+    var modal = document.getElementById('qr-modal');
+    var titleEl = document.getElementById('qr-title');
+    var canvas = document.getElementById('qr-canvas');
+    if (!modal || !canvas) return;
+    if (titleEl) titleEl.innerText = title;
+    if (typeof QRious === 'function') {
+        new QRious({ element: canvas, value: url, size: 200, background: 'white', foreground: 'black' });
+    }
+    if (modal.classList) modal.classList.add('open');
+    modal.style.display = 'flex';
+}
+
+(function patchShowQROpen() {
+    if (typeof showQR !== 'function') return;
+    var original = showQR;
+    window.showQR = function(link, name) {
+        original(link, name);
+        var modal = document.getElementById('qr-modal');
+        if (!modal) return;
+        if (modal.classList) modal.classList.add('open');
+        if (modal.style && modal.style.display === 'none') modal.style.display = 'flex';
+        // ensure visible even when theme uses opacity/pointer-events gating
+        if (getComputedStyle(modal).opacity === '0' || getComputedStyle(modal).pointerEvents === 'none') {
+            modal.classList.add('open');
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+        }
+    };
+})();
+// === NeoTemplate 1.3.0 sub QR END ===
