@@ -2,7 +2,7 @@
   "id": "neo-default",
   "type": "theme",
   "name": "Neo Default Theme",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "NeoTemplate Team",
   "description": "The official default theme for NeoTemplate. Clean, modern, and lightweight.",
   "minPanelVersion": "2.0.0",

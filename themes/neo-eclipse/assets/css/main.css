@@ -721,24 +721,124 @@ body.theme-dark .bottom-actions {
 }
 /* === NeoTemplate 1.2 shared components END === */
 
-/* === NeoTemplate 1.2.1 modal apps === */
+/* === NeoTemplate 1.2.2 UX polish === */
+/* High-contrast floating CTA: invert fg/bg so text never disappears */
+.quick-actions-pill {
+    position: fixed !important;
+    left: 50% !important;
+    bottom: max(16px, env(safe-area-inset-bottom, 16px)) !important;
+    transform: translateX(-50%) !important;
+    z-index: 90 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    min-height: 48px !important;
+    min-width: 160px !important;
+    padding: 12px 22px !important;
+    border-radius: 999px !important;
+    border: none !important;
+    background: var(--text-main, var(--text-primary, #f8fafc)) !important;
+    color: var(--bg-main, var(--bg-body, #0a0a0a)) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
+    cursor: pointer !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.01em !important;
+    line-height: 1.2 !important;
+    -webkit-tap-highlight-color: transparent;
+}
+.quick-actions-pill span {
+    color: inherit !important;
+    opacity: 1 !important;
+}
+.quick-actions-pill svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke: currentColor !important;
+    color: inherit !important;
+}
+.quick-actions-pill:focus-visible {
+    outline: 2px solid var(--accent-green, var(--primary, #3b82f6));
+    outline-offset: 3px;
+}
+.quick-actions-pill:active {
+    transform: translateX(-50%) scale(0.97) !important;
+}
+
+/* Eclipse uses .bottom-actions as the CTA */
+.bottom-actions {
+    background: var(--text-main, #fff) !important;
+    color: var(--bg-main, #0a0a0a) !important;
+    border: none !important;
+}
+.bottom-actions span,
+.bottom-actions svg {
+    color: inherit !important;
+    stroke: currentColor !important;
+}
+
+/* Footer stays in content flow, never beside the page */
+.footer {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    padding: 8px 12px 88px !important;
+    font-size: 0.75rem !important;
+    line-height: 1.5 !important;
+    color: var(--text-sub, rgba(255, 255, 255, 0.55)) !important;
+    flex-shrink: 0;
+}
+.footer a,
+.footer-link {
+    color: inherit !important;
+    text-decoration: none !important;
+    opacity: 0.85;
+}
+.footer a:hover,
+.footer-link:hover {
+    opacity: 1;
+    text-decoration: underline !important;
+}
+.footer-brand {
+    font-weight: 600;
+    opacity: 0.9;
+}
+.footer-sep {
+    margin: 0 0.35em;
+    opacity: 0.45;
+}
+
+/* Readable secondary labels (WCAG-ish on dark) */
+.neo-presence-meta,
+.neo-apps-modal-title,
+.neo-app-desc,
+.neo-apps-hint,
+.section-title,
+.hero-label,
+.stat-box-lbl,
+.traffic-lbl {
+    opacity: 1 !important;
+    color: var(--text-sub, #A1A1A6) !important;
+}
+.neo-presence-label,
+.neo-app-name,
+.widget-title {
+    color: var(--text-main, var(--text-primary, #fff)) !important;
+}
+
+/* Modal apps stay tidy */
 .neo-apps-section { display: none !important; }
-.neo-apps-modal-block {
-    margin-top: 4px;
-}
+.neo-apps-modal-block { margin-top: 4px; }
 .neo-apps-modal-title {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    opacity: 0.65;
-    margin: 0 0 10px;
-}
-#action-modal .neo-apps-tabs {
-    margin-bottom: 10px;
-}
-#action-modal .neo-app-btn {
-    min-height: 52px;
+    margin: 4px 0 10px;
 }
 #action-modal .neo-app-meta {
     display: flex;
@@ -749,32 +849,18 @@ body.theme-dark .bottom-actions {
 #action-modal .neo-app-desc {
     display: block;
 }
-#action-modal .neo-apps-hint {
-    margin-top: 8px;
-    margin-bottom: 0;
+#action-modal .modal-content,
+#action-modal .glass-card,
+#action-modal .modal-card {
+    max-height: min(85vh, 640px);
+    overflow: auto;
 }
-.quick-actions-pill {
-    position: fixed;
-    left: 50%;
-    bottom: 20px;
-    transform: translateX(-50%);
-    z-index: 90;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 48px;
-    padding: 12px 18px;
-    border-radius: 999px;
-    background: var(--bg-card, #fff);
-    color: var(--text-main, var(--text-primary, #0f172a));
-    border: 1px solid rgba(128,128,128,0.18);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-    cursor: pointer;
-    font-weight: 650;
-    font-size: 0.875rem;
+
+body {
+    padding-bottom: env(safe-area-inset-bottom, 0);
 }
-.quick-actions-pill:focus-visible {
-    outline: 2px solid var(--primary, #3b82f6);
-    outline-offset: 2px;
+@media (prefers-reduced-motion: reduce) {
+    .quick-actions-pill,
+    .bottom-actions { transition: none !important; }
 }
-/* === NeoTemplate 1.2.1 modal apps END === */
+/* === NeoTemplate 1.2.2 UX polish END === */

@@ -2,6 +2,12 @@
 
 All notable changes to the NeoTemplate SDK will be documented in this file.
 
+## [1.2.2] - 2026-10-12
+### Fixed
+- Restore high-contrast Quick Actions pill so label/icon stay readable on dark themes.
+- Keep the footer in the page flow (no longer sits beside the header).
+- Improve secondary text contrast and modal spacing for Add to App.
+
 ## [1.2.1] - 2026-10-12
 ### Fixed
 - Move Add to App into the Quick Actions modal so the main page stays clean.
