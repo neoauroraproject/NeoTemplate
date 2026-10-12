@@ -12,6 +12,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body class="theme-dark">
+
+    <div id="page-meta" style="display:none"
+        data-online="{{ if .isOnline }}1{{ else }}0{{ end }}"
+        data-enabled="{{ if .enabled }}1{{ else }}0{{ end }}"
+        data-last-online="{{ .lastOnline }}"
+        data-expire="{{ .expire }}"
+        data-datepicker="{{ .datepicker }}"
+        data-sub-url="{{ .subUrl }}"
+        data-sub-json="{{ .subJsonUrl }}"
+        data-sub-clash="{{ .subClashUrl }}"
+        data-sub-title="{{ .subTitle }}"></div>
+
     <!-- Ambient Background -->
     <div class="ambient-bg">
         <div class="blob blob-1"></div>
@@ -53,9 +65,11 @@
                 <div style="font-size: 0.8rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.05em;">Client Profile</div>
                 <div id="display-name" style="font-size: 1.1rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">{{ range $i, $e := .emails }}{{ if eq $i 0 }}{{ $e }}{{ end }}{{ end }}</div>
             </div>
-        </div>
 
-        <!-- Hero Card (Remaining Traffic) -->
+        
+
+        </div>
+<!-- Hero Card (Remaining Traffic) -->
         <section class="hero-card glass-pane">
             <div class="hero-header">
                 <h2>Remaining Traffic</h2>
@@ -102,7 +116,32 @@
             </div>
         </section>
         
-        <!-- Configurations -->
+        <section class="neo-live-panel" id="neo-live-panel" aria-label="Live status">
+            <div class="neo-presence">
+                <span id="online-dot" class="neo-online-dot {{ if .isOnline }}is-online{{ else }}is-offline{{ end }}" aria-hidden="true"></span>
+                <div class="neo-presence-text">
+                    <span class="neo-presence-label" id="online-label">{{ if .isOnline }}Online{{ else }}Offline{{ end }}</span>
+                    <span class="neo-presence-meta" id="online-meta" data-ms="{{ .lastOnline }}">Last seen</span>
+                </div>
+                <span id="live-online-badge" class="badge {{ if .isOnline }}badge-success{{ else }}badge-danger{{ end }}">{{ if .isOnline }}Online{{ else }}Offline{{ end }}</span>
+            </div>
+            {{ if .announce }}
+            <div class="neo-announce" id="announce-banner">{{ .announce }}</div>
+            {{ end }}
+            <div class="neo-hwid-card" id="hwid-card" hidden>
+                <div class="neo-hwid-head">
+                    <div class="neo-hwid-title">Device slots</div>
+                    <span class="neo-hwid-badge" id="hwid-badge">Available</span>
+                </div>
+                <div class="neo-hwid-stats">
+                    <div class="neo-hwid-stat"><b id="hwid-registered">0</b><span>Registered</span></div>
+                    <div class="neo-hwid-stat"><b id="hwid-limit">0</b><span>Limit</span></div>
+                    <div class="neo-hwid-stat"><b id="hwid-remaining">0</b><span>Remaining</span></div>
+                </div>
+                <div class="neo-hwid-track" aria-hidden="true"><div class="neo-hwid-fill" id="hwid-fill"></div></div>
+            </div>
+        </section>
+<!-- Configurations -->
         <h3 style="font-size: 1rem; font-weight: 500; margin: 24px 0 12px 12px;">Configurations</h3>
         <div class="config-list">
             
@@ -125,7 +164,12 @@
             <a href="https://github.com/neoauroraproject/NeoTemplate" target="_blank" style="opacity: 0.5; transition: opacity 0.2s; color: inherit; text-decoration: none; display: inline-block;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">Powered by NeoTemplate</a>
         </div>
     </div>
-    
+
+        <section class="neo-apps-section" aria-label="Add to app" style="margin-top:24px;">
+            <h2 class="section-title" style="font-size:1rem; margin-bottom:12px;">Add to app</h2>
+            <div id="apps-import-root" class="neo-apps"></div>
+        </section>
+
     <!-- Quick Actions Pill -->
     <div class="quick-actions-pill glass-pane" onclick="document.getElementById('action-modal').classList.add('open')">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
@@ -140,9 +184,7 @@
                 <button class="icon-btn" onclick="document.getElementById('action-modal').classList.remove('open')">✕</button>
             </div>
             <button class="btn glass-btn" style="margin-bottom: 12px; display:flex; justify-content:center;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
-            <a href="v2rayng://install-sub?url={{ .subUrl }}&name={{ range $i, $e := .emails }}{{ if eq $i 0 }}{{ $e }}{{ end }}{{ end }}" class="btn glass-btn" style="margin-bottom: 12px; text-decoration:none; display:flex; justify-content:center;">Import to V2RayNG / v2rayN</a>
-            <a href="v2ray://install-sub?url={{ .subUrl }}&name={{ range $i, $e := .emails }}{{ if eq $i 0 }}{{ $e }}{{ end }}{{ end }}" class="btn glass-btn" style="text-decoration:none; display:flex; justify-content:center;">Import to Shadowrocket / iOS</a>
-            <a class="modal-btn" style="text-decoration:none; background: var(--success); color: white; margin-top: 12px;" href="{{ .subSupportUrl }}" target="_blank">
+<a class="modal-btn" style="text-decoration:none; background: var(--success); color: white; margin-top: 12px;" href="{{ .subSupportUrl }}" target="_blank">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 Contact Support
             </a>

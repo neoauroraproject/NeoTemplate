@@ -13,6 +13,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body class="theme-dark">
+
+    <div id="page-meta" style="display:none"
+        data-online="{{ if .isOnline }}1{{ else }}0{{ end }}"
+        data-enabled="{{ if .enabled }}1{{ else }}0{{ end }}"
+        data-last-online="{{ .lastOnline }}"
+        data-expire="{{ .expire }}"
+        data-datepicker="{{ .datepicker }}"
+        data-sub-url="{{ .subUrl }}"
+        data-sub-json="{{ .subJsonUrl }}"
+        data-sub-clash="{{ .subClashUrl }}"
+        data-sub-title="{{ .subTitle }}"></div>
+
     
     <div id="notification-container" class="notification-container"></div>
 
@@ -62,7 +74,34 @@
             <span class="sub-text date-value" data-timestamp="{{ .expire }}" id="days-remaining"></span>
         </div>
 
-        <!-- Hero Card (Priority 1) -->
+        
+
+<section class="neo-live-panel" id="neo-live-panel" aria-label="Live status">
+            <div class="neo-presence">
+                <span id="online-dot" class="neo-online-dot {{ if .isOnline }}is-online{{ else }}is-offline{{ end }}" aria-hidden="true"></span>
+                <div class="neo-presence-text">
+                    <span class="neo-presence-label" id="online-label">{{ if .isOnline }}Online{{ else }}Offline{{ end }}</span>
+                    <span class="neo-presence-meta" id="online-meta" data-ms="{{ .lastOnline }}">Last seen</span>
+                </div>
+                <span id="live-online-badge" class="badge {{ if .isOnline }}badge-success{{ else }}badge-danger{{ end }}">{{ if .isOnline }}Online{{ else }}Offline{{ end }}</span>
+            </div>
+            {{ if .announce }}
+            <div class="neo-announce" id="announce-banner">{{ .announce }}</div>
+            {{ end }}
+            <div class="neo-hwid-card" id="hwid-card" hidden>
+                <div class="neo-hwid-head">
+                    <div class="neo-hwid-title">Device slots</div>
+                    <span class="neo-hwid-badge" id="hwid-badge">Available</span>
+                </div>
+                <div class="neo-hwid-stats">
+                    <div class="neo-hwid-stat"><b id="hwid-registered">0</b><span>Registered</span></div>
+                    <div class="neo-hwid-stat"><b id="hwid-limit">0</b><span>Limit</span></div>
+                    <div class="neo-hwid-stat"><b id="hwid-remaining">0</b><span>Remaining</span></div>
+                </div>
+                <div class="neo-hwid-track" aria-hidden="true"><div class="neo-hwid-fill" id="hwid-fill"></div></div>
+            </div>
+        </section>
+<!-- Hero Card (Priority 1) -->
         <section class="hero-card">
             <div id="hero-main-stat">
                 <span class="hero-stat-value" style="font-size: 4rem; line-height:1;" id="hero-large-number">-</span>
@@ -167,6 +206,11 @@
             </div>
         </section>
 
+        <section class="neo-apps-section" aria-label="Add to app" style="margin-top:24px;">
+            <h2 class="section-title" style="font-size:1rem; margin-bottom:12px;">Add to app</h2>
+            <div id="apps-import-root" class="neo-apps"></div>
+        </section>
+
         <!-- Footer -->
         <footer class="footer" style="padding-bottom: 80px;">
             <p><a href="https://github.com/neoauroraproject/NeoTemplate" target="_blank" style="opacity: 0.5; transition: opacity 0.2s; color: inherit; text-decoration: none;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">Powered by NeoTemplate</a></p>
@@ -188,9 +232,7 @@
                 <button style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('action-modal').style.display='none'">✕</button>
             </div>
             <button class="copy-btn" style="padding: 12px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); text-decoration: none; display: flex; justify-content: center; width: 100%; border: 1px solid var(--card-border); margin-bottom: 12px; cursor: pointer; font-weight: 600; font-family: inherit;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
-            <a href="v2rayng://install-sub?url={{ .subUrl }}&name={{ range $i, $e := .emails }}{{ if eq $i 0 }}{{ $e }}{{ end }}{{ end }}" class="copy-btn" style="padding: 12px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); text-decoration: none; display: flex; justify-content: center; width: 100%; border: 1px solid var(--card-border); margin-bottom: 12px; cursor: pointer; font-weight: 600; font-family: inherit; text-align: center;">Import to V2RayNG / v2rayN</a>
-            <a href="v2ray://install-sub?url={{ .subUrl }}&name={{ range $i, $e := .emails }}{{ if eq $i 0 }}{{ $e }}{{ end }}{{ end }}" class="copy-btn" style="padding: 12px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); text-decoration: none; display: flex; justify-content: center; width: 100%; border: 1px solid var(--card-border); cursor: pointer; font-weight: 600; font-family: inherit; text-align: center;">Import to Shadowrocket / iOS</a>
-            <a class="modal-btn" style="padding: 12px; border-radius: 12px; background: var(--success); color: white; text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; margin-top: 12px; cursor: pointer; font-weight: 600; font-family: inherit;" href="{{ .subSupportUrl }}" target="_blank">
+<a class="modal-btn" style="padding: 12px; border-radius: 12px; background: var(--success); color: white; text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; margin-top: 12px; cursor: pointer; font-weight: 600; font-family: inherit;" href="{{ .subSupportUrl }}" target="_blank">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 Contact Support
             </a>

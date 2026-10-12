@@ -737,3 +737,380 @@ document.addEventListener('click', function(e) {
     }
 })();
 // === LANG ENHANCER END ===
+
+// === NeoTemplate 1.2 FEATURES START ===
+(function () {
+    function t(key, fallback) {
+        var lang = localStorage.getItem('neo-lang') || 'en';
+        var fa = {
+            'Online': 'آنلاین',
+            'Offline': 'آفلاین',
+            'Last seen': 'آخرین بازدید',
+            'Never seen': 'هرگز آنلاین نبوده',
+            'Devices': 'دستگاه‌ها',
+            'Device slots': 'اسلات دستگاه',
+            'Registered': 'ثبت‌شده',
+            'Limit': 'سقف',
+            'Remaining': 'باقی‌مانده',
+            'Full': 'پر',
+            'Available': 'آزاد',
+            'Add to app': 'افزودن به برنامه',
+            'Import': 'ورود',
+            'Copy link': 'کپی لینک',
+            'Android': 'اندروید',
+            'iOS': 'آی‌او‌اس',
+            'Windows': 'ویندوز',
+            'macOS': 'مک',
+            'Linux': 'لینوکس',
+            'All': 'همه',
+            'Open app': 'باز کردن',
+            'If the app does not open, copy the subscription link and paste it manually.': 'اگر برنامه باز نشد، لینک سابسکریپشن را کپی و دستی وارد کنید.',
+            'Clash / Mihomo': 'کلش / میهومو',
+            'JSON config': 'کانفیگ JSON'
+        };
+        if (lang === 'fa' && fa[key]) return fa[key];
+        return fallback || key;
+    }
+
+    function $(id) { return document.getElementById(id); }
+
+    function detectPlatform() {
+        var ua = navigator.userAgent || '';
+        var platform = navigator.platform || '';
+        if (/android/i.test(ua)) return 'android';
+        if (/iPad|iPhone|iPod/i.test(ua) || (platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1)) return 'ios';
+        if (/Win/i.test(platform) || /Windows/i.test(ua)) return 'windows';
+        if (/Mac/i.test(platform) || /Macintosh/i.test(ua)) return 'macos';
+        if (/Linux/i.test(ua) || /X11/i.test(ua)) return 'linux';
+        return 'other';
+    }
+
+    function pageMeta() {
+        var el = $('page-meta');
+        if (!el) return {};
+        return {
+            online: el.getAttribute('data-online') === '1',
+            enabled: el.getAttribute('data-enabled') === '1',
+            lastOnline: parseInt(el.getAttribute('data-last-online') || '0', 10) || 0,
+            expire: parseInt(el.getAttribute('data-expire') || '0', 10) || 0,
+            subUrl: el.getAttribute('data-sub-url') || '',
+            subJson: el.getAttribute('data-sub-json') || '',
+            subClash: el.getAttribute('data-sub-clash') || '',
+            subTitle: el.getAttribute('data-sub-title') || '',
+            datepicker: el.getAttribute('data-datepicker') || 'gregorian'
+        };
+    }
+
+    function firstEmail() {
+        var nodes = document.querySelectorAll('#client-emails-container .client-email');
+        for (var i = 0; i < nodes.length; i++) {
+            var v = nodes[i].textContent.trim();
+            if (v) return v;
+        }
+        return '';
+    }
+
+    function profileName(meta) {
+        return meta.subTitle || firstEmail() || 'Subscription';
+    }
+
+    function timeAgo(ms) {
+        if (!ms) return t('Never seen');
+        var seconds = Math.floor((Date.now() - ms) / 1000);
+        if (seconds < 0) seconds = 0;
+        if (seconds < 60) return seconds + 's';
+        var minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return minutes + 'm';
+        var hours = Math.floor(minutes / 60);
+        if (hours < 48) return hours + 'h';
+        var days = Math.floor(hours / 24);
+        return days + 'd';
+    }
+
+    function setPresence(isOnline, lastOnline) {
+        var dot = $('online-dot');
+        var label = $('online-label');
+        var metaEl = $('online-meta');
+        if (dot) {
+            dot.classList.toggle('is-online', !!isOnline);
+            dot.classList.toggle('is-offline', !isOnline);
+        }
+        if (label) label.textContent = isOnline ? t('Online') : t('Offline');
+        if (metaEl) {
+            metaEl.textContent = isOnline
+                ? t('Online')
+                : (t('Last seen') + ': ' + timeAgo(lastOnline));
+        }
+        var badge = $('live-online-badge');
+        if (badge) {
+            badge.textContent = isOnline ? t('Online') : t('Offline');
+            badge.className = 'badge ' + (isOnline ? 'badge-success' : 'badge-danger');
+        }
+    }
+
+    function updateUsageFromInfo(info) {
+        if (!info) return;
+        var map = [
+            ['stat-used', info.used],
+            ['stat-remained', info.remained],
+            ['stat-total-text', info.total],
+            ['stat-up-text', info.upload],
+            ['stat-down-text', info.download]
+        ];
+        for (var i = 0; i < map.length; i++) {
+            var el = $(map[i][0]);
+            if (el && map[i][1] != null) el.textContent = map[i][1];
+        }
+        var rem = $('hero-rem-text');
+        if (rem && info.remained) rem.textContent = info.remained;
+    }
+
+    async function pollLiveStatus() {
+        try {
+            var url = new URL(window.location.href);
+            url.searchParams.set('format', 'info');
+            var res = await fetch(url.toString(), { credentials: 'omit', cache: 'no-store' });
+            if (!res.ok) return;
+            var info = await res.json();
+            setPresence(!!info.isOnline, parseInt(info.lastOnline || '0', 10) || 0);
+            updateUsageFromInfo(info);
+            var meta = $('page-meta');
+            if (meta) {
+                meta.setAttribute('data-online', info.isOnline ? '1' : '0');
+                if (info.lastOnline != null) meta.setAttribute('data-last-online', String(info.lastOnline));
+            }
+        } catch (e) {}
+    }
+
+    function renderHwid(status) {
+        var card = $('hwid-card');
+        if (!card) return;
+        if (!status || !status.active) {
+            card.hidden = true;
+            return;
+        }
+        card.hidden = false;
+        var limit = Number(status.limit || 0);
+        var registered = Number(status.registered || 0);
+        var remaining = Number(status.remaining || 0);
+        var full = !!status.full;
+        var setText = function (id, value) {
+            var el = $(id);
+            if (el) el.textContent = String(value);
+        };
+        setText('hwid-registered', registered);
+        setText('hwid-limit', limit);
+        setText('hwid-remaining', remaining);
+        var badge = $('hwid-badge');
+        if (badge) {
+            badge.textContent = full ? t('Full') : t('Available');
+            badge.classList.toggle('is-full', full);
+        }
+        var fill = $('hwid-fill');
+        if (fill) {
+            var pct = limit > 0 ? Math.min(100, Math.round((registered / limit) * 100)) : 0;
+            fill.style.width = pct + '%';
+            fill.classList.toggle('is-full', full);
+        }
+    }
+
+    async function pollHwidStatus() {
+        try {
+            var path = window.location.pathname.replace(/\/$/, '');
+            var res = await fetch(path + '/hwid-status', { credentials: 'omit', cache: 'no-store' });
+            if (res.status === 404) {
+                renderHwid(null);
+                return;
+            }
+            if (!res.ok) return;
+            renderHwid(await res.json());
+        } catch (e) {
+            renderHwid(null);
+        }
+    }
+
+    function encodeB64Utf8(str) {
+        try {
+            return btoa(unescape(encodeURIComponent(str)));
+        } catch (e) {
+            return btoa(str);
+        }
+    }
+
+    function buildAppLinks(meta) {
+        var name = profileName(meta);
+        var sub = meta.subUrl || window.location.href.split('#')[0].split('?')[0];
+        var clash = meta.subClash || '';
+        var jsonUrl = meta.subJson || '';
+        var enc = encodeURIComponent(sub);
+        var encName = encodeURIComponent(name);
+        var encWithHash = encodeURIComponent(sub + '#' + name);
+        var encClash = clash ? encodeURIComponent(clash) : '';
+        var subB64 = encodeB64Utf8(sub);
+
+        return [
+            {
+                id: 'v2rayng', platforms: ['android'],
+                name: 'V2RayNG', desc: 'Android',
+                href: 'v2rayng://install-sub/?url=' + encWithHash,
+                fallback: sub, color: '#1d4ed8', short: 'NG'
+            },
+            {
+                id: 'hiddify', platforms: ['android', 'ios', 'windows', 'macos', 'linux'],
+                name: 'Hiddify', desc: 'Multi-platform',
+                href: 'hiddify://import/' + sub + '#' + encName,
+                fallback: sub, color: '#0ea5e9', short: 'HD'
+            },
+            {
+                id: 'nekobox', platforms: ['android'],
+                name: 'NekoBox', desc: 'Android',
+                href: 'sn://subscription?url=' + enc + '&name=' + encName,
+                fallback: sub, color: '#7c3aed', short: 'NK'
+            },
+            {
+                id: 'clashmeta', platforms: ['android', 'windows', 'macos', 'linux'],
+                name: t('Clash / Mihomo'), desc: clash ? 'Clash' : 'Copy Clash URL',
+                href: clash ? ('clash://install-config?url=' + encClash + '&name=' + encName) : '',
+                fallback: clash || sub, color: '#f59e0b', short: 'CL',
+                copyOnly: !clash
+            },
+            {
+                id: 'shadowrocket', platforms: ['ios'],
+                name: 'Shadowrocket', desc: 'iOS',
+                href: 'sub://' + subB64,
+                fallback: sub, color: '#111827', short: 'SR'
+            },
+            {
+                id: 'streisand', platforms: ['ios', 'macos'],
+                name: 'Streisand', desc: 'iOS / macOS',
+                href: 'streisand://import/' + subB64,
+                fallback: sub, color: '#db2777', short: 'ST'
+            },
+            {
+                id: 'stash', platforms: ['ios', 'macos'],
+                name: 'Stash', desc: 'iOS / macOS',
+                href: clash ? ('stash://install-config?url=' + encClash) : ('stash://install-config?url=' + enc),
+                fallback: clash || sub, color: '#059669', short: 'SH'
+            },
+            {
+                id: 'v2rayn', platforms: ['windows'],
+                name: 'v2rayN', desc: 'Windows',
+                href: 'v2rayng://install-sub/?url=' + encWithHash,
+                fallback: sub, color: '#2563eb', short: 'VN'
+            },
+            {
+                id: 'clashverge', platforms: ['windows', 'macos', 'linux'],
+                name: 'Clash Verge', desc: 'Desktop',
+                href: clash ? ('clash://install-config?url=' + encClash + '&name=' + encName) : '',
+                fallback: clash || sub, color: '#ea580c', short: 'CV',
+                copyOnly: !clash
+            },
+            {
+                id: 'json', platforms: ['android', 'ios', 'windows', 'macos', 'linux', 'other'],
+                name: t('JSON config'), desc: 'Copy JSON URL',
+                href: '', fallback: jsonUrl || sub, color: '#475569', short: 'JS',
+                copyOnly: true
+            }
+        ];
+    }
+
+    function renderApps(activePlatform) {
+        var root = $('apps-import-root');
+        if (!root) return;
+        var meta = pageMeta();
+        var apps = buildAppLinks(meta);
+        var platforms = ['android', 'ios', 'windows', 'macos', 'linux'];
+        var labels = {
+            android: t('Android'), ios: t('iOS'), windows: t('Windows'),
+            macos: t('macOS'), linux: t('Linux'), all: t('All')
+        };
+        if (!activePlatform) activePlatform = detectPlatform();
+        if (platforms.indexOf(activePlatform) === -1) activePlatform = 'android';
+
+        var tabs = '<div class="neo-apps-tabs" role="tablist" aria-label="' + t('Add to app') + '">';
+        for (var i = 0; i < platforms.length; i++) {
+            var p = platforms[i];
+            tabs += '<button type="button" class="neo-apps-tab' + (p === activePlatform ? ' is-active' : '') + '" data-os="' + p + '" role="tab" aria-selected="' + (p === activePlatform) + '">' + labels[p] + '</button>';
+        }
+        tabs += '</div>';
+
+        var list = '<div class="neo-apps-list">';
+        var shown = 0;
+        for (var j = 0; j < apps.length; j++) {
+            var app = apps[j];
+            if (app.platforms.indexOf(activePlatform) === -1 && app.platforms.indexOf('other') === -1) continue;
+            if (!app.fallback && !app.href) continue;
+            shown++;
+            var action = app.copyOnly || !app.href ? t('Copy link') : t('Open app');
+            var tag = app.copyOnly || !app.href ? 'button' : 'a';
+            var attrs = app.copyOnly || !app.href
+                ? ' type="button" data-copy="' + String(app.fallback || '').replace(/"/g, '&quot;') + '"'
+                : ' href="' + app.href.replace(/"/g, '&quot;') + '" data-fallback="' + String(app.fallback || '').replace(/"/g, '&quot;') + '"';
+            list += '<' + tag + ' class="neo-app-btn"' + attrs + '>';
+            list += '<span class="neo-app-icon" style="background:' + app.color + '">' + app.short + '</span>';
+            list += '<span class="neo-app-meta"><span class="neo-app-name">' + app.name + '</span><span class="neo-app-desc">' + app.desc + '</span></span>';
+            list += '<span class="neo-app-action">' + action + '</span>';
+            list += '</' + tag + '>';
+        }
+        if (!shown) {
+            list += '<button type="button" class="neo-app-btn" data-copy="' + String(meta.subUrl || '').replace(/"/g, '&quot;') + '">';
+            list += '<span class="neo-app-icon">URL</span><span class="neo-app-meta"><span class="neo-app-name">' + t('Copy link') + '</span></span>';
+            list += '<span class="neo-app-action">' + t('Copy link') + '</span></button>';
+        }
+        list += '</div><p class="neo-apps-hint">' + t('If the app does not open, copy the subscription link and paste it manually.') + '</p>';
+
+        root.innerHTML = '<div class="neo-apps">' + tabs + list + '</div>';
+
+        var tabBtns = root.querySelectorAll('.neo-apps-tab');
+        for (var k = 0; k < tabBtns.length; k++) {
+            tabBtns[k].addEventListener('click', function (ev) {
+                renderApps(ev.currentTarget.getAttribute('data-os'));
+            });
+        }
+        var copyBtns = root.querySelectorAll('[data-copy]');
+        for (var c = 0; c < copyBtns.length; c++) {
+            copyBtns[c].addEventListener('click', function (ev) {
+                var val = ev.currentTarget.getAttribute('data-copy') || '';
+                if (typeof window.copyToClipboard === 'function') window.copyToClipboard(val, t('Copy link'));
+            });
+        }
+        var anchors = root.querySelectorAll('a.neo-app-btn[data-fallback]');
+        for (var a = 0; a < anchors.length; a++) {
+            anchors[a].addEventListener('click', function (ev) {
+                var fallback = ev.currentTarget.getAttribute('data-fallback') || '';
+                setTimeout(function () {
+                    // Keep fallback available via long-press alternative: store last
+                    window.__neoLastImportFallback = fallback;
+                }, 0);
+            });
+        }
+    }
+
+    function initLivePanel() {
+        var meta = pageMeta();
+        setPresence(!!meta.online, meta.lastOnline || 0);
+        pollLiveStatus();
+        pollHwidStatus();
+        renderApps();
+        setInterval(pollLiveStatus, 10000);
+        setInterval(pollHwidStatus, 30000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLivePanel);
+    } else {
+        initLivePanel();
+    }
+
+    // Re-render apps after language toggle
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.id === 'lang-toggle') {
+            setTimeout(function () {
+                var meta = pageMeta();
+                setPresence(meta.online, meta.lastOnline || 0);
+                renderApps(detectPlatform());
+            }, 50);
+        }
+    });
+})();
+// === NeoTemplate 1.2 FEATURES END ===

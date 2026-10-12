@@ -2,6 +2,13 @@
 
 All notable changes to the NeoTemplate SDK will be documented in this file.
 
+## [1.2.0] - 2026-10-12
+### Added
+- Live online/offline status with `?format=info` polling.
+- HWID device-slot card via `/hwid-status` (shown only when the panel enforces a limit).
+- OS-aware Add to App actions for Android, iOS, Windows, macOS, and Linux (V2RayNG, Hiddify, NekoBox, Clash/Mihomo, Shadowrocket, Streisand, Stash, v2rayN, Clash Verge).
+- Announcement banner support for `{{ .announce }}`.
+
 ## [1.1.2] - 2026-08-18
 ### Fixed
 - Inline CSS and JavaScript in production packages so 3x-ui subscription pages load without 404s on `main.css` and `app.js`.

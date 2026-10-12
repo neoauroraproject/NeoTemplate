@@ -12,6 +12,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body class="theme-dark">
+
+    <div id="page-meta" style="display:none"
+        data-online="{{ if .isOnline }}1{{ else }}0{{ end }}"
+        data-enabled="{{ if .enabled }}1{{ else }}0{{ end }}"
+        data-last-online="{{ .lastOnline }}"
+        data-expire="{{ .expire }}"
+        data-datepicker="{{ .datepicker }}"
+        data-sub-url="{{ .subUrl }}"
+        data-sub-json="{{ .subJsonUrl }}"
+        data-sub-clash="{{ .subClashUrl }}"
+        data-sub-title="{{ .subTitle }}"></div>
+
     <!-- Raw Data -->
     <div id="raw-data" style="display:none;" 
         data-up="{{ .uploadByte }}" 
@@ -28,8 +40,35 @@
                 Support
             </a>
         </header>
+
         
-        <!-- Main Battery Widget -->
+
+<section class="neo-live-panel" id="neo-live-panel" aria-label="Live status">
+            <div class="neo-presence">
+                <span id="online-dot" class="neo-online-dot {{ if .isOnline }}is-online{{ else }}is-offline{{ end }}" aria-hidden="true"></span>
+                <div class="neo-presence-text">
+                    <span class="neo-presence-label" id="online-label">{{ if .isOnline }}Online{{ else }}Offline{{ end }}</span>
+                    <span class="neo-presence-meta" id="online-meta" data-ms="{{ .lastOnline }}">Last seen</span>
+                </div>
+                <span id="live-online-badge" class="badge {{ if .isOnline }}badge-success{{ else }}badge-danger{{ end }}">{{ if .isOnline }}Online{{ else }}Offline{{ end }}</span>
+            </div>
+            {{ if .announce }}
+            <div class="neo-announce" id="announce-banner">{{ .announce }}</div>
+            {{ end }}
+            <div class="neo-hwid-card" id="hwid-card" hidden>
+                <div class="neo-hwid-head">
+                    <div class="neo-hwid-title">Device slots</div>
+                    <span class="neo-hwid-badge" id="hwid-badge">Available</span>
+                </div>
+                <div class="neo-hwid-stats">
+                    <div class="neo-hwid-stat"><b id="hwid-registered">0</b><span>Registered</span></div>
+                    <div class="neo-hwid-stat"><b id="hwid-limit">0</b><span>Limit</span></div>
+                    <div class="neo-hwid-stat"><b id="hwid-remaining">0</b><span>Remaining</span></div>
+                </div>
+                <div class="neo-hwid-track" aria-hidden="true"><div class="neo-hwid-fill" id="hwid-fill"></div></div>
+            </div>
+        </section>
+<!-- Main Battery Widget -->
         <div class="widget-card">
             
             <div class="widget-header">
@@ -106,6 +145,11 @@
         </div>
     </div>
 
+        <section class="neo-apps-section" aria-label="Add to app" style="margin-top:24px;">
+            <h2 class="section-title" style="font-size:1rem; margin-bottom:12px;">Add to app</h2>
+            <div id="apps-import-root" class="neo-apps"></div>
+        </section>
+
     <!-- Quick Actions Pill -->
     <div class="quick-actions-pill" onclick="document.getElementById('action-modal').classList.add('open')">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
@@ -120,10 +164,7 @@
                 <button style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('action-modal').classList.remove('open')">✕</button>
             </div>
             <button class="action-btn" style="margin-bottom: 12px; display:flex; justify-content:center;" onclick="copyToClipboard('{{ .subUrl }}', 'URL Copied!')">Copy Subscription Link</button>
-            <a href="v2rayng://install-sub?url={{ .subUrl }}&name={{ range $i, $e := .emails }}{{ if eq $i 0 }}{{ $e }}{{ end }}{{ end }}" class="action-btn" style="margin-bottom: 12px; text-decoration:none; display:flex; justify-content:center;">Import to V2RayNG / v2rayN</a>
-            <a href="v2ray://install-sub?url={{ .subUrl }}&name={{ range $i, $e := .emails }}{{ if eq $i 0 }}{{ $e }}{{ end }}{{ end }}" class="action-btn" style="text-decoration:none; display:flex; justify-content:center;">Import to Shadowrocket / iOS</a>
-
-        </div>
+</div>
     </div>
 
     <!-- Advanced Info Modal -->
